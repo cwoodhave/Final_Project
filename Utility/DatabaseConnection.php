@@ -6,6 +6,8 @@
  * Time: 9:10 AM
  */
 
+namespace Utility;
+
 class DatabaseConnection
 {
     private static $instance = null;
