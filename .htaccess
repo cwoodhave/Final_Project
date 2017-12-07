@@ -1,0 +1,4 @@
+<IfModule mod_php7.c>
+    php_value xdebug.remote_host  "137.190.216.131"
+   php_flag xdebug.remote_enable on
+</IfModule>

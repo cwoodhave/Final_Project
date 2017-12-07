@@ -14,7 +14,7 @@ echo "<h4>Welcome to the application process for supplemental course credits</h4
         <form method='POST'>
             <label for='username'>Username: </label><input type='text' name='username' id='username'/><br/>
             <label for='password'>Password:</label><input type='password' name='password' id='password'/><br/>
-            <input class='btn btn-primary' type='submit' value='Sign In' />
+            <input class='btn btn-primary' type='submit' name='submit' value='Sign In' />
         </form><br/>
         <a href='View/createAccount.php'>Create Account</a>";
 
