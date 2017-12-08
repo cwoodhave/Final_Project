@@ -7,6 +7,10 @@
  */
 
 use Utility\DatabaseConnection as DatabaseConnection;
+use Model\Users;
+
+require_once "Utility/DatabaseConnection.php";
+require_once "Model/Users.php";
 
 session_start(); // Starting Session
 $error=''; // Variable To Store Error Message
@@ -43,7 +47,7 @@ if (isset($_POST['submit'])) {
             $rows = $stmtHndl->rowCount();
 
             if ($rows == 1) {
-                $_SESSION['login_user']=$username; // Initializing Session
+                $_SESSION['login_user']= new Users($username); // Initializing Session
                 header("location: View/profile.php"); // Redirecting To Other Page
             } else {
                 $error = "Username or Password is invalid";
