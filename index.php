@@ -1,8 +1,5 @@
 <?php
 
-use Utility\DatabaseConnection as DatabaseConnection;
-use Model\Users;
-
 //Check if server request is post  and if the fields have been competed
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
 

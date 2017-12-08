@@ -8,7 +8,10 @@
 
 namespace Model;
 
+use function PHPSTORM_META\elementType;
 use Utility\DatabaseConnection as DatabaseConnection;
+
+require_once '../Utility/DatabaseConnection.php';
 
 class Users
 {
@@ -37,7 +40,7 @@ class Users
     {
         try
         {
-            $stmthndl = $this->dbh->prepare("SELECT * FROM 'users' WHERE 'username' = :username");
+            $stmthndl = $this->dbh->prepare("SELECT * FROM users WHERE 'username' = :username");
             $stmthndl->bindParam("username", $username);
 
             $stmthndl->execute();
@@ -72,7 +75,7 @@ class Users
             {
                 $this->isAdmin = false;
 
-                $stmthndl = $this->dbh->prepare("INSERT INTO 'users' (username, password, firstname, lastname, email, isAdmin)
+                $stmthndl = $this->dbh->prepare("INSERT INTO users (username, password, firstname, lastname, email, isAdmin)
                                                     VALUES (:username, :password, :firstname, :lastname, :email, :isAdmin)");
                 $stmthndl->bindParam("username", $username);
                 $stmthndl->bindParam("password", $password);
@@ -88,7 +91,7 @@ class Users
             //Update user if already exists
             else
             {
-                $stmthndl = $this->dbh->prepare("UPDATE 'users'
+                $stmthndl = $this->dbh->prepare("UPDATE users
                                                  SET username = :username, password = :password, firstname = :firstname,
                                                 lastname = :lastname, email = :email");
                 $stmthndl->bindParam("username", $username);
@@ -100,6 +103,36 @@ class Users
                 $stmthndl->execute();
             }
 
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
+    public static function UserExists($username) : bool
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+
+            $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+            $stmt->bindParam("username", $username);
+            $stmt->execute();
+
+            $rows = $stmt->rowCount();
+
+            if ($rows == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+            $stmt = null;
+            $db = null;
         }
         catch (\PDOException $e)
         {

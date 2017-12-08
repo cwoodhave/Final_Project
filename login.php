@@ -38,7 +38,7 @@ if (isset($_POST['submit'])) {
             $username = filter_var($username, FILTER_SANITIZE_STRING);
             $password = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmtHndl = $dbh->prepare("SELECT * FROM 'users' WHERE 'username' = :username AND 'password' = :password");
+            $stmtHndl = $dbh->prepare("SELECT * FROM users WHERE 'username' = :username AND 'password' = :password");
             $stmtHndl->bindParam('username', $username);
             $stmtHndl->bindParam('password', $password);
 
