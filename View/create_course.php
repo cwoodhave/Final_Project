@@ -1,25 +1,26 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: CW
- * Date: 12/6/2017
- * Time: 7:58 AM
+ * User: Chris
+ * Date: 12/9/2017
+ * Time: 6:08 PM
  */
 
 use Model\Users as Users;
 
 require_once '../Model/Users.php';
 
-$username = "";
-$password = "";
-$confirm = "";
-$first = "";
-$last = "";
-$email = "";
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
+
+if(!isset($_SESSION['login_user']) || $_SESSION['login_user'] === '' || !isset($_SESSION['login_user_isAdmin']) || !$_SESSION['login_user_isAdmin']){
+    header("Location: ../index.php");
+}
+
+$instructors = Users::GetInstructors();
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    $newUser = new Users();
 
     if (isset($_POST['submit'])) {
         $ok = true;
@@ -60,6 +61,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         if($ok)
         {
+            $newUser = new Users();
             $newUser->saveUser($username, $password, $first, $last, $email);
             require_once '../Utility/login_logic.php';
         }
@@ -68,44 +70,53 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 require_once '_header.php';
 
-echo "<h3>Create User Account</h3>
+echo "<h3>Create New Course</h3>
         <form method='post'>
         <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='username' >Username: </label>
-            <input class='col-sm-5' type='text' name='username' id='username' value='$username'/><br/>
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='classNumber' >Class Number: </label>
+            <select class='col-sm-5' name='classNumber' id='classNumber'>
+                <option value=''></option>
+                <option value='CS4800'>CS 4800</option>
+                <option value='CS4890'>CS 4890</option>
+            </select>
         </div>
         <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='password'>Password*: </label>
-            <input class='col-sm-5' type='password' name='password' id='password' /><br/>
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='courseYear'>Course Year: </label>
+            <input class='col-sm-5' type='number' maxlength='4' minlength='4'  name='courseYear' id='courseYear' /><br/>
         </div>
         <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='confirm'>Confirm Password: </label>
-            <input class='col-sm-5' type='password' name='confirm' id='confirm'><br/>
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='courseSemester'>Course Semester: </label>
+            <select class='col-sm-5' name='courseSemester' id='courseSemester'>
+                <option value=''></option>
+                <option value='FALL'>Fall</option>
+                <option value='SPRING'>Spring</option>
+                <option value='SUMMER'>Summer</option>
+            </select>
         </div>
         <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='first'>First Name: </label>
-            <input class='col-sm-5' type='text' name='first' id='first' value='$first'><br/>
-        </div>
-        <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='last'>Last Name: </label>
-            <input class='col-sm-5' type='text' name='last' id='last' value='$last'><br/>
-        </div>
-        <div class='row' style='margin-top: 5px;'>
-            <label class='col-sm-3 col-sm-offset-2 text-right' for='email'>Email: </label>
-            <input class='col-sm-5' type='email' name='email' id='email' value='$email'><br/>
-        </div>
-        <div class='row' style='margin-top: 5px;'>
-            <input class='btn btn-success' type='submit' name='submit' value='Create Account'/> 
-        </div>
-       </form><br>
-        <span style='font-size: smaller; color: darkblue'>*Password must be: at least 8 characters long and contain at least 1 number, 1 upper case character, 
-        and 1 lower case character.</span><br/>";
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='instructorID'>Instructor: </label>
+            <select class='col-sm-5' name='instructorID' id='instructorID'>
+                <option value=''></option>";
 
-if(isset($error) && !empty($error) && is_array($error)){
-    foreach ($error as $property => $value)
-    {
-        echo "<br/><span style='color: red'>$value</span>";
-    }
-}
+                foreach ($instructors as $instructor){
+                    echo "<option value='" . $instructor['userID'] . "'>" . $instructor['firstname'] . " " . $instructor['lastname'] . "</option>";
+                }
+
+echo        "</select>
+        </div>
+        <div class='row' style='margin-top: 5px;'>
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='openDate'>Opening Date: </label>
+            <input class='col-sm-5' type='datetime-local' name='openDate' id='openDate' value='' readonly >         
+        </div>
+        <div class='row' style='margin-top: 5px;'>
+            <label class='col-sm-3 col-sm-offset-2 text-right' for='closeDate'>Closing Date: </label>
+            <input class='col-sm-5' type='datetime-local' name='closeDate' id='closeDate' value='' readonly><br/>           
+        </div> 
+        <div class='row' style='margin-top: 5px;'>
+            <input class='btn btn-success' type='submit' name='submit' value='Create Course'/> 
+        </div>
+       </form><br>";
+
+//var_dump($instructors);
 
 require_once  '_footer.php';

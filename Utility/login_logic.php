@@ -10,7 +10,10 @@ use Model\Users as Users;
 
 require_once(dirname(__FILE__) . '/../Model/Users.php');
 
-session_start(); // Starting Session
+
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 $username = '';
 $password = '';
 
@@ -32,10 +35,10 @@ if (isset($_POST['submit'])) {
         $username = filter_var($username, FILTER_SANITIZE_STRING);
 
         if(Users::UserExists($username)){
-            $user = new Users($username);
-            $passwordHash = trim($user->getPassword());
-            if(password_verify($password, $passwordHash))
+
+            if(Users::VerifyPassword($username, $password))
             {
+                $user = new Users($username);
                 $_SESSION['login_user'] = $username; // Initializing Session
                 $_SESSION['login_user_isAdmin'] = $user->getisAdmin();
                 header("location: http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/profile.php"); // Redirecting To Other Page

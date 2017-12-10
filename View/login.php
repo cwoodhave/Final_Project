@@ -7,7 +7,10 @@
  */
 
 require_once "../Model/Users.php";
-session_start();
+
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 
 //Check if server request is post  and if the fields have been competed
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -33,16 +36,6 @@ echo "<h4>Application process for supplemental course credits</h4>
                 <input class='btn btn-primary' type='submit' name='submit' value='Sign In' />
             </div> 
         </form><br/>
-        <a href='createAccount.php'>Create Account</a>";
-
-if(isset($error) && !empty($error) && is_array($error)){
-    foreach ($error as $property => $value)
-    {
-        echo "<br/><span style='color: red'>$value</span>";
-    }
-}
-//if(isset($error) && $error !== ''){
-//    echo "<br/><span style='color: red'>$error</span>";
-//}
+        <a href='create_account.php'>Create Account</a>";
 
 require_once '_footer.php';

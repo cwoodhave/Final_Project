@@ -8,7 +8,9 @@
 
 session_start();
 
-$_SESSION['login_user'] = null;
-$_SESSION['login_user_isAdmin'] = null;
+unset($_SESSION['login_user']);
+unset($_SESSION['login_user_isAdmin']);
+
+session_destroy();
 
 header("Location: ../index.php");

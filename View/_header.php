@@ -6,6 +6,10 @@
  * Time: 8:20 AM
  */
 
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
+
 if(isset($_SESSION['login_user']) && !empty($_SESSION['login_user'] && isset($_SESSION['login_user_isAdmin']) )){
 
     $user = $_SESSION['login_user'];
@@ -23,7 +27,7 @@ if(isset($_SESSION['login_user']) && !empty($_SESSION['login_user'] && isset($_S
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body style="background-color: #a47cb7">
+<body style="background-color: #492365">
 <div class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header" style="max-height: 50px;">
@@ -35,15 +39,15 @@ if(isset($_SESSION['login_user']) && !empty($_SESSION['login_user'] && isset($_S
             <?php
                 if(isset($user) && !empty($user)){
                     if($isAdmin){
-                        echo "<li><a href=''>Review Applications</a></li>
-                                <li><a href=''>Admin Stuff</a></li>";
+                        echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/review_applications.php'>Review Applications</a></li>
+                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/courses_main.php'>Modify Courses</a></li>";
                     }
                     else {
                         echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/applications_main.php'>Apply</a></li>
                                 <li><a href=''> My Applications</a></li>";
                     }
 
-                    echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/profile.php'>$user</a></li>
+                    echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/profile.php'>Profile</a></li>
                             <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/Utility/logout.php'>Logout</a></li>";
                 }
                 else{
@@ -56,4 +60,4 @@ if(isset($_SESSION['login_user']) && !empty($_SESSION['login_user'] && isset($_S
 </div>
 
 <div class="container img-rounded" style="background-color: whitesmoke; padding: 2em;">
-    <div class="col-sm-8 col-sm-offset-2 text-center">
+    <div class="col-sm-10 col-sm-offset-1 text-center">

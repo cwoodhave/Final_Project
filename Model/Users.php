@@ -66,18 +66,10 @@ class Users
 
     function saveUser($username, $password, $first, $last, $email)
     {
-        $this->username = $username;
-        $this->password = $password;
-        $this->firstname = $first;
-        $this->lastname = $last;
-        $this->email = $email;
-
         try {
             //Create user if none exists
             if ($this->userID === null)
             {
-                $this->isAdmin = false;
-
                 $stmthndl = $this->dbh->prepare("INSERT INTO users (username, password, firstname, lastname, email)
                                                     VALUES (:username, :password, :firstname, :lastname, :email)");
                 $stmthndl->bindParam("username", $username);
@@ -89,20 +81,100 @@ class Users
                 $stmthndl->execute();
 
                 $this->userID = $this->dbh->lastInsertId();
+                $this->isAdmin = false;
             }
             //Update user if already exists
             else
             {
                 $stmthndl = $this->dbh->prepare("UPDATE users
-                                                 SET username = :username, password = :password, firstname = :firstname,
-                                                lastname = :lastname, email = :email");
+                                                 SET username = :username, firstname = :firstname,
+                                                lastname = :lastname, email = :email
+                                                WHERE userID = :userID");
                 $stmthndl->bindParam("username", $username);
-                $stmthndl->bindParam("password", $password);
                 $stmthndl->bindParam("firstname", $first);
                 $stmthndl->bindParam("lastname", $last);
                 $stmthndl->bindParam("email", $email);
+                $stmthndl->bindParam("userID", $this->userID);
 
                 $stmthndl->execute();
+            }
+
+            $this->username = $username;
+            $this->password = $password;
+            $this->firstname = $first;
+            $this->lastname = $last;
+            $this->email = $email;
+
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
+    function updatePassword($oldPassword, $newPassword)
+    {
+        if(self::VerifyPassword($this->username,$oldPassword))
+        {
+            try
+            {
+                $stmthndl = $this->dbh->prepare("UPDATE users
+                                                 SET password = :password
+                                                WHERE userID = :userID");
+                $stmthndl->bindParam("password", $newPassword);
+                $stmthndl->bindParam("userID", $this->userID);
+
+                $stmthndl->execute();
+            }
+            catch (\PDOException $e)
+            {
+
+            }
+        }
+    }
+
+    public static function UserExists($username, $userID = null) : bool
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+
+            if($userID === null)
+            {
+                $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+                $stmt->bindParam("username", $username);
+                $stmt->execute();
+
+                $rows = $stmt->rowCount();
+
+                if ($rows == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //Else statement for when user is updating their profile
+            //Want to let them change their user info without updating their username
+            else
+            {
+                $stmt = $db->prepare("SELECT * FROM users WHERE username = :username AND userID != :userID");
+                $stmt->bindParam("username", $username);
+                $stmt->bindParam('userID', $userID);
+                $stmt->execute();
+
+                $rows = $stmt->rowCount();
+
+                if ($rows == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
         }
@@ -112,29 +184,44 @@ class Users
         }
     }
 
-    public static function UserExists($username) : bool
+    public static function VerifyPassword($username, $password) : bool
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-
-            $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
-            $stmt->bindParam("username", $username);
-            $stmt->execute();
-
-            $rows = $stmt->rowCount();
-
-            if ($rows == 1)
+            if(self::UserExists($username))
             {
-                return true;
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT password FROM users WHERE username = :username");
+                $stmt->bindParam("username", $username);
+                $stmt->execute();
+
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $results = $stmt->fetch();
+                $passwordHash = $results['password'];
+                return (password_verify($password, $passwordHash));
+
             }
             else
             {
                 return false;
             }
+        }
+        catch (\PDOException $e)
+        {
 
-            $stmt = null;
-            $db = null;
+        }
+    }
+
+    public static function GetInstructors()
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+            $stmt = $db->prepare("SELECT * FROM users WHERE isAdmin = TRUE");
+
+            $stmt->execute();
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+            return $stmt->fetchAll();
         }
         catch (\PDOException $e)
         {
