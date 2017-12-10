@@ -13,8 +13,8 @@ if(!isset($_SESSION['login_user']) || $_SESSION['login_user'] === ''){
 }
 
 
-require_once '_header.php';
+require_once (realpath(dirname(__FILE__)). '/../View/_header.php');
 
 echo "<h2>Main Applications Page</h2>";
 
-require_once '_footer.php';
+require_once (realpath(dirname(__FILE__)). '/../View/_footer.php');

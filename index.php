@@ -1,24 +1,14 @@
 <?php
 
-//Check if server request is post  and if the fields have been competed
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+session_start();
 
-    require_once 'login.php';
-}
+require_once 'View/_header.php';
 
-require_once  'View/_header.php';
+echo "<h3>Welcome to the CS 4800/4890 Application Website</h3>
+        <p>CS 4800 and 4890 are courses designed to help students receive upper division credit for performing work related to the CS field.  This may be either CS related employment or completing a project outside of normal course work.</p>
+        <p>All students wishing to receive course credit for supplemental CS work should create an account here and apply for one or both of these classes.  Based on your application, one of the faculty will determine how many credits you will be awarded.</p>
+        <p>If you have any questions please contact the CS department at:</p><br/>
+        <span>Phone:  (801) 626-7929</span>";
 
-echo "<h4>Welcome to the application process for supplemental course credits</h4>
-        <p>Please login in or create a new account to begin</p>
-        <form method='POST'>
-            <label for='username'>Username: </label><input type='text' name='username' id='username'/><br/>
-            <label for='password'>Password:</label><input type='password' name='password' id='password'/><br/>
-            <input class='btn btn-primary' type='submit' name='submit' value='Sign In' />
-        </form><br/>
-        <a href='View/createAccount.php'>Create Account</a>";
-
-if(isset($error) && $error !== ''){
-    echo "<br/><span style='color: red'>$error</span>";
-}
 
 require_once 'View/_footer.php';

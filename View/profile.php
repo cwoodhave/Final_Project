@@ -8,14 +8,16 @@
 
 use Model\Users;
 
+require_once "../Model/Users.php";
+
 session_start();
 
 if(!isset($_SESSION['login_user']) || $_SESSION['login_user'] === '' ){
     header("Location: ../index.php");
 }
 
-$username = $_SESSION['login_user']->getUsername();
-$isAdmin = $_SESSION['login_user']->getisAdmin();
+$username = $_SESSION['login_user'];
+$isAdmin = $_SESSION['login_user_isAdmin'];
 
 require_once '_header.php';
 

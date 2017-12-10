@@ -8,10 +8,10 @@
 
 namespace Model;
 
-use function PHPSTORM_META\elementType;
 use Utility\DatabaseConnection as DatabaseConnection;
 
-require_once '../Utility/DatabaseConnection.php';
+//require_once 'DatabaseConnection.php';
+require_once (dirname(__FILE__) .  '/../Utility/DatabaseConnection.php');
 
 class Users
 {
@@ -40,18 +40,21 @@ class Users
     {
         try
         {
-            $stmthndl = $this->dbh->prepare("SELECT * FROM users WHERE 'username' = :username");
+            $stmthndl = $this->dbh->prepare("SELECT * FROM users WHERE username = :username");
             $stmthndl->bindParam("username", $username);
 
             $stmthndl->execute();
             $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
             $row = $stmthndl->fetch();
 
-            foreach ($row as $property => $value)
+            if($stmthndl->rowCount() == 1)
             {
-                if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                foreach ($row as $property => $value)
                 {
-                    $this->$method($value);
+                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    {
+                        $this->$method($value);
+                    }
                 }
             }
         }
@@ -75,14 +78,13 @@ class Users
             {
                 $this->isAdmin = false;
 
-                $stmthndl = $this->dbh->prepare("INSERT INTO users (username, password, firstname, lastname, email, isAdmin)
-                                                    VALUES (:username, :password, :firstname, :lastname, :email, :isAdmin)");
+                $stmthndl = $this->dbh->prepare("INSERT INTO users (username, password, firstname, lastname, email)
+                                                    VALUES (:username, :password, :firstname, :lastname, :email)");
                 $stmthndl->bindParam("username", $username);
                 $stmthndl->bindParam("password", $password);
                 $stmthndl->bindParam("firstname", $first);
                 $stmthndl->bindParam("lastname", $last);
                 $stmthndl->bindParam("email", $email);
-                $stmthndl->bindParam("isAdmin", $this->isAdmin);
 
                 $stmthndl->execute();
 
@@ -191,9 +193,7 @@ class Users
      */
     public function setPassword($password)
     {
-        if(isset($password) && !empty($password) && preg_match('@[A-Z]@', $password)
-        && preg_match('@[a-z]@', $password) && preg_match('@[0-9]@', $password)
-        && strlen($password >= 8))
+        if(isset($password) && !empty($password))
         {
             $this->password = $password;
         }
