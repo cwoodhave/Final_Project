@@ -64,7 +64,7 @@ class Responses
         if($this->responseID === null) {
             try {
                 $stmt = $this->dbh->prepare("INSERT INTO responses (applicationID, questionID, responseText)
-                                              VALUES (:applicationID, :questionID, responseText)");
+                                              VALUES (:applicationID, :questionID, :responseText)");
                 $stmt->bindParam("applicationID", $this->applicationID);
                 $stmt->bindParam("questionID", $this->questionID);
                 $stmt->bindParam("responseText", $this->responseText);
@@ -86,6 +86,25 @@ class Responses
             $stmt->bindParam('responseID', $this->responseID);
 
             $stmt->execute();
+        }
+    }
+
+    public static function getResponseByApplicationID($applicationID)
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+
+            $stmt = $db->prepare("SELECT * FROM responses WHERE applicationID = :applicationID");
+            $stmt->bindParam("applicationID", $applicationID);
+            $stmt->execute();
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+
+            return $stmt->fetchAll();
+        }
+        catch (\PDOException $e)
+        {
+
         }
     }
 

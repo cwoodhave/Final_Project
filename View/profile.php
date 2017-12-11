@@ -59,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
         if (empty($_POST['verify']) || !isset($_POST['verify']) || !Users::VerifyPassword($username, $_POST['verify'])){
             $ok = false;
-            $error[] = "Password is invalid";
+            $error[] = "Please verify your password";
         }
         else{
             $new_password = password_hash(trim($_POST['verify']), PASSWORD_DEFAULT);

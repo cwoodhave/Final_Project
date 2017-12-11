@@ -56,6 +56,15 @@ class Applications
                     }
                 }
             }
+
+            $responses = Responses::getResponseByApplicationID($applicationID);
+
+            foreach ($responses as $response)
+            {
+                $responseID = $response['responseID'];
+                $this->responses[] = new Responses($responseID);
+            }
+
         }
         catch (\PDOException $e)
         {
@@ -112,7 +121,16 @@ class Applications
     {
         try
         {
+            $db = DatabaseConnection::getInstance();
+            $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
+                                            FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
+                                            LEFT JOIN courses c ON (a.courseID = c.courseID) 
+                                            WHERE a.userID = :userID");
+            $stmt->bindParam("userID", $userID);
+            $stmt->execute();
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
+            return $stmt->fetchAll();
         }
         catch (\PDOException $e)
         {

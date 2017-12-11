@@ -131,7 +131,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 
             $newApplication->saveApplication();
-            //header("location: user_applications.php");
+            header("location: user_applications.php");
         }
     }
 }
