@@ -166,9 +166,4 @@ echo "<h2>Hello $username</h2>
         <span style='font-size: smaller; color: darkblue'>*Password must be: at least 8 characters long and contain at least 1 number, 1 upper case character, 
         and 1 lower case character.</span><br/>";
 
-if($isAdmin)
-{
-    echo "<p>You have admin rights</p>";
-}
-
 require_once '_footer.php';

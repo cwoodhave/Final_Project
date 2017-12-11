@@ -9,8 +9,10 @@
 namespace Model;
 
 use Utility\DatabaseConnection as DatabaseConnection;
+use Model\Responses as Responses;
 
 require_once (dirname(__FILE__) .  '/../Utility/DatabaseConnection.php');
+require_once (dirname(__FILE__) . '/Responses.php');
 
 class Applications
 {
@@ -18,14 +20,105 @@ class Applications
     private $userID;
     private $courseID;
     private $dateCreated;
+    private $responses;
     private $dbh;
 
-    function __construct()
+    function __construct($applicationID = null)
     {
         $this->dbh = DatabaseConnection::getInstance();
+        $this->applicationID = null;
+
+        if($applicationID !== null)
+        {
+            $this->getApplicationByID(@$applicationID);
+        }
+
+    }
+
+    private function getApplicationByID($applicationID)
+    {
+        try
+        {
+            $stmthndl = $this->dbh->prepare("SELECT * FROM applications WHERE applicationID = :applicationID");
+            $stmthndl->bindParam("applicationID", $applicationID);
+
+            $stmthndl->execute();
+            $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
+            $row = $stmthndl->fetch();
+
+            if($stmthndl->rowCount() == 1)
+            {
+                foreach ($row as $property => $value)
+                {
+                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    {
+                        $this->$method($value);
+                    }
+                }
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
     }
 
 
+    function saveApplication()
+    {
+        if($this->applicationID === null) {
+            try {
+                $stmt = $this->dbh->prepare("INSERT INTO applications (userID, courseID)
+                                              VALUES (:userID, :courseID)");
+                $stmt->bindParam("userID", $this->userID);
+                $stmt->bindParam("courseID", $this->courseID);
+
+                $stmt->execute();
+
+                $this->applicationID = $this->dbh->lastInsertId();
+
+            } catch (\PDOException $e) {
+
+            }
+            //Save Responses
+            foreach ($this->responses as $response) {
+
+                $response->setApplicationID($this->applicationID);
+                $response->saveResponse();
+            }
+        }
+        else
+        {
+            //Update Responses
+            foreach ($this->responses as $response) {
+                $response->saveResponse();
+            }
+        }
+    }
+
+    public static function getApplicationsByCourse($courseID)
+    {
+        try
+        {
+
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
+    public static function getApplicationsByUser($userID)
+    {
+        try
+        {
+
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
 
 
     /**
@@ -91,6 +184,23 @@ class Applications
     {
         $this->dateCreated = $dateCreated;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getResponses()
+    {
+        return $this->responses;
+    }
+
+    /**
+     * @param mixed $responses
+     */
+    public function setResponses($responses)
+    {
+        $this->responses = $responses;
+    }
+
 
 
 }

@@ -6,13 +6,20 @@
  * Time: 6:07 PM
  */
 
-session_start();
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
 
 if(!isset($_SESSION['login_user']) || $_SESSION['login_user'] === ''){
     header("Location: ../index.php");
 }
 
-require_once (realpath(dirname(__FILE__)). '/../View/_header.php');
+use Model\Courses as Courses;
+require_once '../Model/Courses.php';
+
+$activeCourses = Courses::getActiveCourses('CS4890');
+
+require_once '_header.php';
 
 echo "<h2>CS 4890 - Cooperative Work Experience</h2>
         <h4>Employment Qualifications Guide</h4>
@@ -56,6 +63,18 @@ echo "<h2>CS 4890 - Cooperative Work Experience</h2>
                 <input class='col-sm-8' type='text' name='credits' id='credits'/><br/>
             </div>
             <div class='row' style='margin-top: 5px;'>
+                <label class='col-sm-4 text-right' for='course'>Available Courses: </label>
+                <select class='col-sm-8' name='courseID' id='courseID'>
+                    <option value=''></option>";
+
+                foreach ($activeCourses as $course){
+                    echo "<option value='" . $course['courseID'] . "'> " . $course['courseSemester'] . " " . $course['courseYear'] . ", Instructor: "
+                        . $course['instructorFirstname'] . " " . $course['instructorLastname'] . "</option>";
+                }
+
+echo        "</select>
+            </div>
+            <div class='row' style='margin-top: 5px;'>
                 <br><p style='font-weight: bold'>Note: You need to speak with your boss and make sure they are willing to fill out an employee evaluation (I’ll provide the form) at the end of the semester.</p>
             </div>
             <div class='row' style='margin-top: 5px;'>
@@ -66,4 +85,4 @@ echo "<h2>CS 4890 - Cooperative Work Experience</h2>
             </div>
         </form>";
 
-require_once (realpath(dirname(__FILE__)). '/../View/_footer.php');
+require_once '_footer.php';

@@ -46,7 +46,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         } else {
             $classNumber = filter_var(trim($_POST['classNumber']), FILTER_SANITIZE_STRING);
         }
-        if (empty($_POST['courseYear']) || !isset($_POST['courseYear']) || $_POST['courseYear'] < 2015 || $_POST['courseYear'] > 2100){
+        if (empty($_POST['courseYear']) || !isset($_POST['courseYear']) || !is_numeric($_POST['courseYear']) || $_POST['courseYear'] < 2015 || $_POST['courseYear'] > 2100){
             $ok = false;
             $error[] = "Invalid course year";
         } else {

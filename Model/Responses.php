@@ -20,12 +20,74 @@ class Responses
     private $responseText;
     private $dbh;
 
-    function __construct()
+    function __construct($responseID = null)
     {
         $this->dbh = DatabaseConnection::getInstance();
+        $this->responseID = null;
+
+        if($responseID !== null)
+        {
+            $this->getResponseByID($responseID);
+        }
     }
 
+    private function getResponseByID($responseID)
+    {
+        try
+        {
+            $stmthndl = $this->dbh->prepare("SELECT * FROM responses WHERE responseID = :responseID");
+            $stmthndl->bindParam("responseID", $responseID);
 
+            $stmthndl->execute();
+            $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
+            $row = $stmthndl->fetch();
+
+            if($stmthndl->rowCount() == 1)
+            {
+                foreach ($row as $property => $value)
+                {
+                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    {
+                        $this->$method($value);
+                    }
+                }
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
+    function saveResponse()
+    {
+        if($this->responseID === null) {
+            try {
+                $stmt = $this->dbh->prepare("INSERT INTO responses (applicationID, questionID, responseText)
+                                              VALUES (:applicationID, :questionID, responseText)");
+                $stmt->bindParam("applicationID", $this->applicationID);
+                $stmt->bindParam("questionID", $this->questionID);
+                $stmt->bindParam("responseText", $this->responseText);
+
+                $stmt->execute();
+
+                $this->responseID = $this->dbh->lastInsertId();
+
+            } catch (\PDOException $e) {
+
+            }
+        }
+        else
+        {
+            $stmt = $this->dbh->prepare("UPDATE responses
+                                              SET responseText = :responseText
+                                              WHERE responseID = :responseID");
+            $stmt->bindParam('responseText', $this->responseText);
+            $stmt->bindParam('responseID', $this->responseID);
+
+            $stmt->execute();
+        }
+    }
 
     /**
      * @return mixed

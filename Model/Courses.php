@@ -121,7 +121,7 @@ class Courses
             {
                 $stmt = $this->dbh->prepare("UPDATE courses
                                               SET classNumber = :classNumber, courseYear = :courseYear, courseSemester = :courseSemester, 
-                                              instructorID = :instructorID, openDate = :openDate, closeDate = :closeDate)
+                                              instructorID = :instructorID, openDate = :openDate, closeDate = :closeDate
                                               WHERE courseID = :courseID");
                 $stmt->bindParam('classNumber', $classNumber);
                 $stmt->bindParam('courseYear', $courseYear);
@@ -147,22 +147,40 @@ class Courses
         }
     }
 
-    public static function getActiveCourses()
+    public static function getActiveCourses($classNumber = null)
     {
         try
         {
             $db = DatabaseConnection::getInstance();
             $now = date("Y-m-d H:i:s");
 
-            $stmt = $db->prepare("SELECT courseID, classNumber, courseYear, courseSemester, instructorID, openDate, closeDate,  firstname AS instructorFirstname, lastname AS instructorLastname
+            if($classNumber === null)
+            {
+                $stmt = $db->prepare("SELECT courseID, classNumber, courseYear, courseSemester, instructorID, openDate, closeDate,  firstname AS instructorFirstname, lastname AS instructorLastname
                                             FROM courses LEFT JOIN users ON (courses.instructorID = users.userID) 
                                             WHERE openDate <= :now AND closeDate >= :now
                                             ORDER BY closeDate ASC; ");
-            $stmt->bindParam('now', $now, \PDO::PARAM_STR);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $stmt->bindParam('now', $now, \PDO::PARAM_STR);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            return $stmt->fetchAll();
+                return $stmt->fetchAll();
+            }
+            else
+            {
+                $stmt = $db->prepare("SELECT courseID, classNumber, courseYear, courseSemester, instructorID, openDate, closeDate,  firstname AS instructorFirstname, lastname AS instructorLastname
+                                            FROM courses LEFT JOIN users ON (courses.instructorID = users.userID) 
+                                            WHERE openDate <= :now AND closeDate >= :now
+                                            AND classNumber = :classNumber
+                                            ORDER BY closeDate ASC; ");
+                $stmt->bindParam('now', $now, \PDO::PARAM_STR);
+                $stmt->bindParam('classNumber', $classNumber);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+
+                return $stmt->fetchAll();
+            }
+
         }
         catch (\PDOException $e)
         {
@@ -180,7 +198,7 @@ class Courses
             $stmt = $db->prepare("SELECT courseID, classNumber, courseYear, courseSemester, instructorID, openDate, closeDate,  firstname AS instructorFirstname, lastname AS instructorLastname
                                             FROM courses LEFT JOIN users ON (courses.instructorID = users.userID) 
                                             WHERE closeDate < :now 
-                                            ORDER BY closeDate ASC; ");
+                                            ORDER BY closeDate DESC; ");
             $stmt->bindParam('now', $now, \PDO::PARAM_STR);
             $stmt->execute();
             $stmt->setFetchMode(\PDO::FETCH_ASSOC);
@@ -203,7 +221,7 @@ class Courses
             $stmt = $db->prepare("SELECT courseID, classNumber, courseYear, courseSemester, instructorID, openDate, closeDate,  firstname AS instructorFirstname, lastname AS instructorLastname
                                             FROM courses LEFT JOIN users ON (courses.instructorID = users.userID) 
                                             WHERE openDate > :now 
-                                            ORDER BY closeDate ASC; ");
+                                            ORDER BY openDate ASC; ");
             $stmt->bindParam('now', $now, \PDO::PARAM_STR);
             $stmt->execute();
             $stmt->setFetchMode(\PDO::FETCH_ASSOC);
