@@ -234,6 +234,24 @@ class Courses
         }
     }
 
+    public static function getCoursesByInstructor($instructorID)
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+            $stmt = $db->prepare("SELECT * FROM courses WHERE instructorID = :instructorID ORDER BY closeDate DESC;");
+            $stmt->bindParam("instructorID", $instructorID);
+            $stmt->execute();
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+
+            return $stmt->fetchAll();
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
 
 
     /**

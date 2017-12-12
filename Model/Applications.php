@@ -109,7 +109,25 @@ class Applications
     {
         try
         {
+            $db = DatabaseConnection::getInstance();
+            $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate, a.dateCreated
+                                            FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
+                                            LEFT JOIN courses c ON (a.courseID = c.courseID) 
+                                            WHERE a.courseID = :courseID
+                                            ORDER BY a.dateCreated DESC");
+            $stmt->bindParam("courseID", $courseID);
+            $stmt->execute();
+            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
+            $applications = $stmt->fetchAll();
+
+            for ($i=0; $i < sizeof($applications); ++$i)
+            {
+                $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
+                $applications[$i]['responses'] = $responses;
+            }
+
+            return $applications;
         }
         catch (\PDOException $e)
         {
@@ -125,17 +143,40 @@ class Applications
             $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
                                             FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
                                             LEFT JOIN courses c ON (a.courseID = c.courseID) 
-                                            WHERE a.userID = :userID");
+                                            WHERE a.userID = :userID
+                                            ORDER BY a.dateCreated DESC");
             $stmt->bindParam("userID", $userID);
             $stmt->execute();
             $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            return $stmt->fetchAll();
+            $applications = $stmt->fetchAll();
+
+            for ($i=0; $i < sizeof($applications); ++$i)
+            {
+                $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
+                $applications[$i]['responses'] = $responses;
+            }
+
+            return $applications;
         }
         catch (\PDOException $e)
         {
 
         }
+    }
+
+    public static function ApplicationAlreadySubmitted($userID, $courseID) : bool
+    {
+        $db = DatabaseConnection::getInstance();
+        $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
+        $stmt->bindParam("userID", $userID);
+        $stmt->bindParam("courseID", $courseID);
+        $stmt->execute();
+
+        $rows = $stmt->rowCount();
+
+        return ($rows === 1);
+
     }
 
 

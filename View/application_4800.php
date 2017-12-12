@@ -92,46 +92,50 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         {
             $user = new Users($_SESSION['login_user']);
 
+            if(Applications::ApplicationAlreadySubmitted($user->getUserID(), $courseID))
+            {
+                $error[] = "You have already submitted an application for this course.";
+            }
+            else
+            {
+                $r_name = new Responses();
+                $r_name->setQuestionID('name');
+                $r_name->setResponseText($name);
+                $responses[] = $r_name;
+                $r_wnum = new Responses();
+                $r_wnum->setQuestionID('w_number');
+                $r_wnum->setResponseText($w_number);
+                $responses[] = $r_wnum;
+                $r_desc = new Responses();
+                $r_desc->setQuestionID('description');
+                $r_desc->setResponseText($description);
+                $responses[] = $r_desc;
+                $r_just = new Responses();
+                $r_just->setQuestionID('justification');
+                $r_just->setResponseText($justification);
+                $responses[] = $r_just;
+                $r_meth = new Responses();
+                $r_meth->setQuestionID('method');
+                $r_meth->setResponseText($method);
+                $responses[] = $r_meth;
+                $r_reso = new Responses();
+                $r_reso->setQuestionID('resources');
+                $r_reso->setResponseText($resources);
+                $responses[] = $r_reso;
+                $r_cred = new Responses();
+                $r_cred->setQuestionID('credits');
+                $r_cred->setResponseText($credits);
+                $responses[] = $r_cred;
 
+                $newApplication = new Applications();
+                $newApplication->setCourseID($courseID);
+                $newApplication->setUserID($user->getUserID());
+                $newApplication->setResponses($responses);
 
-            $r_name = new Responses();
-            $r_name->setQuestionID('name');
-            $r_name->setResponseText($name);
-            $responses[] = $r_name;
-            $r_wnum = new Responses();
-            $r_wnum->setQuestionID('w_number');
-            $r_wnum->setResponseText($w_number);
-            $responses[] = $r_wnum;
-            $r_desc = new Responses();
-            $r_desc->setQuestionID('description');
-            $r_desc->setResponseText($description);
-            $responses[] = $r_desc;
-            $r_just = new Responses();
-            $r_just->setQuestionID('justification');
-            $r_just->setResponseText($justification);
-            $responses[] = $r_just;
-            $r_meth = new Responses();
-            $r_meth->setQuestionID('method');
-            $r_meth->setResponseText($method);
-            $responses[] = $r_meth;
-            $r_reso = new Responses();
-            $r_reso->setQuestionID('resources');
-            $r_reso->setResponseText($resources);
-            $responses[] = $r_reso;
-            $r_cred = new Responses();
-            $r_cred->setQuestionID('credits');
-            $r_cred->setResponseText($credits);
-            $responses[] = $r_cred;
+                $newApplication->saveApplication();
 
-            $newApplication = new Applications();
-            $newApplication->setCourseID($courseID);
-            $newApplication->setUserID($user->getUserID());
-            $newApplication->setResponses($responses);
-
-
-
-            $newApplication->saveApplication();
-            header("location: user_applications.php");
+                header("location: user_applications.php");
+            }
         }
     }
 }
