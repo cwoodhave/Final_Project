@@ -40,11 +40,13 @@ if(isset($_SESSION['login_user']) && !empty($_SESSION['login_user'] && isset($_S
                 if(isset($user) && !empty($user)){
                     if($isAdmin){
                         echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/review_applications.php'>Review Applications</a></li>
-                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/courses_main.php'>Modify Courses</a></li>";
+                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/courses_main.php'>Modify Courses</a></li>
+                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/notifications_admin.php'>Notifications</a></li>";
                     }
                     else {
                         echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/applications_main.php'>Apply</a></li>
-                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/user_applications.php'> My Applications</a></li>";
+                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/user_applications.php'> My Applications</a></li>
+                                <li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/notifications_student.php'>Notifications</a></li>";
                     }
 
                     echo "<li><a href='http://icarus.cs.weber.edu/~cw11649/CS3620/Final_Project/View/profile.php'>Profile</a></li>

@@ -25,11 +25,20 @@ $applications = Applications::getApplicationsByUser($user->getUserID());
 
 require_once '_header.php';
 
-echo "<h2>Submitted Applications</h2><br>";
+echo "<h2>Submitted Applications</h2><br>
+        <div class='panel-group'>";
 
+$counter = 1;
 foreach ($applications as $application)
 {
-    echo "<hr style='border-width: 1px; border-color: #666666;' ><h4>" . $application['classNumber'] . ": ". $application['courseSemester'] . " " . $application['courseYear'] . "</h4>";
+    echo "<div class='panel panel-default'>
+            <div class='panel-heading'>
+                <h4 class='panel-title' data-toggle='collapse'   href='#collapse$counter'>"
+                . $application['classNumber'] . ": ". $application['courseSemester'] . " " . $application['courseYear'] . "</h4>
+            </div>
+            
+            <div id='collapse$counter' class='panel-collapse collapse' 
+            <div class='panel-body' >";
 
     foreach ($application['responses'] as $response)
     {
@@ -37,7 +46,7 @@ foreach ($applications as $application)
         {
             echo "<div class='row' style='margin-top: 5px;'>
                 <label class='col-sm-2 text-right' for='" . $response['questionID'] . "'>" . ucfirst($response['questionID']) . ": </label>
-                <textarea class='col-sm-10' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "' readonly>" . $response['responseText'] . "</textarea>
+                <textarea class='col-sm-9' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "' readonly>" . $response['responseText'] . "</textarea>
             </div>";
         }
         else
@@ -48,9 +57,10 @@ foreach ($applications as $application)
             </div>";
         }
     }
-
-    echo "<br>";
+    $counter++;
+    echo "</div></div></div><br>";
 }
+echo "</div>";
 
 
 

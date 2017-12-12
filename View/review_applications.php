@@ -27,7 +27,10 @@ $courses = Courses::getCoursesByInstructor($user->getUserID());
 
 require_once '_header.php';
 
-echo "<h2>Student Applications</h2><br>";
+echo "<h2>Student Applications</h2><br>
+        <div class='panel-group'>";
+
+$counter = 1;
 
 foreach ($courses as $course)
 {
@@ -35,8 +38,15 @@ foreach ($courses as $course)
     $opens = date_create($course['openDate']);
     $closes = date_create($course['closeDate']);
 
-    echo "<h3>" . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . "</h3>
-            <h5>Opens: " . date_format($opens, 'F j, Y, g:i a') . " | Closes: " . date_format($closes, 'F j, Y, g:i a') . "</h5>";
+    echo "<div class='panel panel-default'>
+            <div class='panel-heading'  data-toggle='collapse' href='#collapse$counter'>
+               <h3 class='panel-title'>"
+                . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . "</h3>
+                <h5>Opens: " . date_format($opens, 'F j, Y, g:i a') . " | Closes: " . date_format($closes, 'F j, Y, g:i a') . "</h5>
+                
+            </div>
+            <div id='collapse$counter' class='panel-collapse collapse' 
+            <div class='panel-body' >";
 
     if(empty($applications))
     {
@@ -53,25 +63,85 @@ foreach ($courses as $course)
 
             foreach ($application['responses'] as $response)
             {
-                if($response['questionID'] !== 'name' && $response['questionID'] !== 'w_number' && $response['questionID'] !== 'credits' && $response['questionID'] !== 'hours')
+                if($response['questionID'] !== 'name' && $response['questionID'] !== 'w_number'
+                    && $response['questionID'] !== 'credits' && $response['questionID'] !== 'hours')
                 {
                     echo "<div class='row' style='margin-top: 5px;'>
                         <label class='col-sm-2 text-right' for='" . $response['questionID'] . "'>" . ucfirst($response['questionID']) . ": </label>
-                        <textarea class='col-sm-10' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "' readonly>" . $response['responseText'] . "</textarea>
+                        <textarea class='col-sm-9' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "' readonly>" . $response['responseText'] . "</textarea>
                     </div>";
                 }
                 else
                 {
                     echo "<div class='row' style='margin-top: 5px;'>
                         <label class='col-sm-2 text-right' for='" . $response['questionID'] . "'>" . ucfirst($response['questionID']) . ": </label>
-                        <p class='col-sm-10 text-left' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "'>" . $response['responseText'] . "</p>
+                        <p class='col-sm-9 text-left' name='" . $response['questionID'] . "' id='" . $response['questionID'] . "'>" . $response['responseText'] . "</p>
                     </div>";
                 }
             }
 
-            echo "<br>";
+            echo "<input type='button' style='margin:5px;' class='btn btn-warning' value='Send Notification' onclick='showModal(" . $application['applicationID'] . ", " . $user->getUserID() . ")'>
+                    <br>";
         }
     }
+    echo "</div></div>";
+    $counter++;
 }
+
+//echo "</div>
+//
+//<div class='modal fade' id='sendNotification' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+//            <div class='modal-dialog modal-md' >
+//                <div class='modal-content'>
+//                    <div class='modal-header alert-warning'>
+//                        <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+//                        <h4><span class='glyphicon glyphicon-envelope'></span> Notification</h4>
+//                    </div>
+//                    <div class='modal-body'>
+//                        <form method='POST' action='notifications_admin.php'>
+//                            <p>Please provide a message to send</p>
+//                            <input type='hidden' name='applicationID' value='" .  . "'>
+//                            <div class='row'><textarea cols='70' rows='10' name='notificationText'></textarea></div>
+//                            <div><input type='button' data-dismiss='modal'  class='btn btn-success' id='submit' name='submit' value='Submit'></div>
+//                        </form>
+//                    </div>
+//                </div>
+//            </div>
+//        </div>
+//
+//    </div>";
+
+?>
+
+
+<script>
+
+    var appID;
+    var useID
+
+    function showModal(aid, uid) {
+        appID = aid;
+        useID = uid;
+        $('#sendNotification').modal('show');
+    }
+
+    function submitNotification() {
+        $.ajax({
+            type: 'POST',
+            url: 'notifications_admin.php',
+            data:{
+                action: 'post_notification',
+                applicationID: appID,
+                sentFrom: useID
+                },
+            success: function(html){
+                alert(html);
+            }
+        });
+    }
+</script>
+
+
+<?php
 
 require_once '_footer.php';
