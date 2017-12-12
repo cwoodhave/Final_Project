@@ -23,7 +23,8 @@ require_once '../Model/Courses.php';
 require_once '../Model/Users.php';
 
 $user = new Users($_SESSION['login_user']);
-$courses = Courses::getCoursesByInstructor($user->getUserID());
+$userID= $user->getUserID();
+$courses = Courses::getCoursesByInstructor($userID);
 
 require_once '_header.php';
 
@@ -80,68 +81,18 @@ foreach ($courses as $course)
                 }
             }
 
-            echo "<input type='button' style='margin:5px;' class='btn btn-warning' value='Send Notification' onclick='showModal(" . $application['applicationID'] . ", " . $user->getUserID() . ")'>
+            echo "<form method='POST' action='notifications_admin.php'>
+                        <p>Send a new notification to the user for this application.</p>
+                        <input type='hidden' name='applicationID' value='" . $application['applicationID'] . "'>
+                        <input type='hidden' name='sentFrom' value='$userID'>
+                        <div class='row'><textarea cols='80' rows='5' name='notificationText', id='notificationText'></textarea></div>
+                        <div class='row'><input type='submit' class='btn btn-warning' name='submit' value='Send Notification'></div>
+                    </form>
                     <br>";
         }
     }
     echo "</div></div>";
     $counter++;
 }
-
-//echo "</div>
-//
-//<div class='modal fade' id='sendNotification' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-//            <div class='modal-dialog modal-md' >
-//                <div class='modal-content'>
-//                    <div class='modal-header alert-warning'>
-//                        <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-//                        <h4><span class='glyphicon glyphicon-envelope'></span> Notification</h4>
-//                    </div>
-//                    <div class='modal-body'>
-//                        <form method='POST' action='notifications_admin.php'>
-//                            <p>Please provide a message to send</p>
-//                            <input type='hidden' name='applicationID' value='" .  . "'>
-//                            <div class='row'><textarea cols='70' rows='10' name='notificationText'></textarea></div>
-//                            <div><input type='button' data-dismiss='modal'  class='btn btn-success' id='submit' name='submit' value='Submit'></div>
-//                        </form>
-//                    </div>
-//                </div>
-//            </div>
-//        </div>
-//
-//    </div>";
-
-?>
-
-
-<script>
-
-    var appID;
-    var useID
-
-    function showModal(aid, uid) {
-        appID = aid;
-        useID = uid;
-        $('#sendNotification').modal('show');
-    }
-
-    function submitNotification() {
-        $.ajax({
-            type: 'POST',
-            url: 'notifications_admin.php',
-            data:{
-                action: 'post_notification',
-                applicationID: appID,
-                sentFrom: useID
-                },
-            success: function(html){
-                alert(html);
-            }
-        });
-    }
-</script>
-
-
-<?php
 
 require_once '_footer.php';

@@ -57,7 +57,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $ok = false;
             $error[] = "Something went wrong.  Message was not sent.  Must provide a message";
         } else {
-            $courseSemester = filter_var($_POST['notificationText'], FILTER_SANITIZE_STRING);
+            $notificationText = filter_var($_POST['notificationText'], FILTER_SANITIZE_STRING);
         }
 
         if($ok)
@@ -107,7 +107,7 @@ foreach ($courses as $course)
         {
             $notifications = Notifications::GetNotificationsByApplicationID($application['applicationID']);
 
-            echo "<hr style='border-width: 1px; border-color: #666666;' >
+            echo "
                     <div class='panel panel-default'>
                     <div class='panel-heading' data-toggle='collapse' href='#innercollapse$innerCounter'>
                         <h4 class='panel-title'>Student: " . $application['firstname'] . " " . $application['lastname'] . "</h4>
@@ -120,18 +120,21 @@ foreach ($courses as $course)
                         <input type='hidden' name='applicationID' value='" . $application['applicationID'] . "'>
                         <input type='hidden' name='sentFrom' value='$userID'>
                         <div class='row'><textarea cols='80' rows='5' name='notificationText', id='notificationText'></textarea></div>
-                        <div class='row'><input type='button' class='btn btn-warning' name='submit' value='Send Notification'></div>
+                        <div class='row'><input type='submit' class='btn btn-warning' name='submit' value='Send Notification'></div>
                     </form>";
 
-            if(!empty($notification)) {
+            if(!empty($notifications)) {
                 foreach ($notifications as $notification) {
                     $sent = date_create($notification['dateSent']);
 
-                    echo "<div class='row' style='margin-top: 5px;'>
-                            <p class='col-sm-2 text-right'>Sent From : " . $notification['fromName'] . " </p>
-                            <p class='col-sm-2 text-right'>Sent On: " . date_format($sent, 'F j, Y, g:i a') . "</p>
+                    echo "<hr style='border-width: 1px; border-color: #666666;' >
+                            <div class='row' style='margin-top: 5px;'>
+                            <div class='row'><p>Sent From : " . $notification['fromName'] . " </p></div>
+                            <div class='row'><p>Sent On: " . date_format($sent, 'F j, Y, g:i a') . "</p></div>
+                            <div class='row'>
                             <label class='col-sm-2 text-right' for='message'>Message: </label>
                             <textarea class='col-sm-9' name='message' readonly>" . $notification['notificationText'] . "</textarea>
+                            </div>
                         </div>";
 
                 }

@@ -56,10 +56,11 @@ class Notifications
         try
         {
             $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare('SELECT n.notificationsID, n.applicationID, n.dateSent, n.sentFrom, n.notificationText, n.viewed, 
+            $stmt = $db->prepare('SELECT n.notificationID, n.applicationID, n.dateSent, n.sentFrom, n.notificationText, n.viewed, 
                                                   CONCAT(u.firstname, " ", u.lastname) AS fromName
-                                            FROM notifications n LEFT JOIN user u ON (n.sentFrom = u.userID)
-                                            WHERE applicationID = :applicationID');
+                                            FROM notifications n LEFT JOIN users u ON (n.sentFrom = u.userID)
+                                            WHERE applicationID = :applicationID
+                                            ORDER BY dateSent DESC;');
             $stmt->bindParam('applicationID', $applicationID);
             $stmt->execute();
             $stmt->setFetchMode(\PDO::FETCH_ASSOC);
