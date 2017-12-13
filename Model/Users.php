@@ -64,6 +64,34 @@ class Users
         }
     }
 
+    function getUserByID($userID)
+    {
+        try
+        {
+            $stmthndl = $this->dbh->prepare("SELECT * FROM users WHERE userID = :userID");
+            $stmthndl->bindParam("userID", $userID);
+
+            $stmthndl->execute();
+            $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
+            $row = $stmthndl->fetch();
+
+            if($stmthndl->rowCount() == 1)
+            {
+                foreach ($row as $property => $value)
+                {
+                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    {
+                        $this->$method($value);
+                    }
+                }
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
     function saveUser($username, $password, $first, $last, $email)
     {
         try {

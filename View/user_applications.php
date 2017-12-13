@@ -34,7 +34,7 @@ foreach ($applications as $application)
     echo "<div class='panel panel-default'>
             <div class='panel-heading'>
                 <h4 class='panel-title' data-toggle='collapse'   href='#collapse$counter'>"
-                . $application['classNumber'] . ": ". $application['courseSemester'] . " " . $application['courseYear'] . "</h4>
+                . $application['classNumber'] . ": ". $application['courseSemester'] . " " . $application['courseYear'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h4>
             </div>
             
             <div id='collapse$counter' class='panel-collapse collapse' 
@@ -61,9 +61,5 @@ foreach ($applications as $application)
     echo "</div></div></div><br>";
 }
 echo "</div>";
-
-
-
-
 
 require_once '_footer.php';

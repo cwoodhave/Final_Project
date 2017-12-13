@@ -42,7 +42,7 @@ foreach ($courses as $course)
     echo "<div class='panel panel-default'>
             <div class='panel-heading'  data-toggle='collapse' href='#collapse$counter'>
                <h3 class='panel-title'>"
-                . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . "</h3>
+                . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h3>
                 <h5>Opens: " . date_format($opens, 'F j, Y, g:i a') . " | Closes: " . date_format($closes, 'F j, Y, g:i a') . "</h5>
                 
             </div>

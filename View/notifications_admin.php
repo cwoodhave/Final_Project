@@ -40,13 +40,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         //Verify fields are not empty and that they exist
         if (empty($_POST['applicationID']) || !isset($_POST['applicationID']) || !is_numeric($_POST['applicationID'])){
             $ok = false;
-            $error[] = "Something went wrong.  Message was not sent.";
+            $error[] = "Something went wrong. Message was not sent.";
         } else {
             $applicationID = filter_var($_POST['applicationID'], FILTER_SANITIZE_NUMBER_INT);
         }
         if (empty($_POST['sentFrom']) || !isset($_POST['sentFrom']) || !is_numeric($_POST['sentFrom']) || $_POST['sentFrom'] !== $user->getUserID()){
             $ok = false;
-            $error[] = "Something went wrong.1  Message was not sent.";
+            $error[] = "Something went wrong. Message was not sent.";
         } else {
             $sentFrom = filter_var($_POST['sentFrom'], FILTER_SANITIZE_NUMBER_INT);
         }
@@ -58,14 +58,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
         if (empty($_POST['notificationText']) || !isset($_POST['notificationText'])){
             $ok = false;
-            $error[] = "Something went wrong.  Message was not sent.  Must provide a message";
+            $error[] = "Something went wrong. Message was not sent. Must provide a message";
         } else {
             $notificationText = filter_var($_POST['notificationText'], FILTER_SANITIZE_STRING);
         }
 
         if($ok)
         {
-
             $tempApplication = Applications::GetFullApplicationByID($applicationID);
             if($tempApplication['userID'] !== $sentTo)
             {
@@ -79,9 +78,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $newNotification->setNotificationText($notificationText);
                 $newNotification->saveNotification();
 
-                /////TEST HERE USER IS NOT BEING INITIALIZED!!!!!
-                $student = new Users($sentTo);
-                $error[] = var_dump($student);
+                $student = new Users();
+                $student->getUserByID($sentTo);
 
                 $subject = "CS 4800 & 4890 Notification System";
                 $message = wordwrap("A new notification has been sent to you from your instructor for your " . $tempApplication['classNumber'] . " "
@@ -89,18 +87,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $email = $student->getEmail();
                 $headers = "FROM: no_reply@wsusupplementalapplication.com";
 
-                $error[] = $sentTo;
-
-
-                if(!mail($email, $subject, $message, $headers))
-                {
-                    $error[] = $email;
-                    $error[] = $subject;
-                    $error[] = $message;
-                    $error[] = $headers;
-                }
-
-                //header("Refresh:0");
+                header("Refresh:0");
             }
         }
     }
@@ -123,7 +110,7 @@ foreach ($courses as $course)
     echo "<div class='panel panel-default'>
             <div class='panel-heading'  data-toggle='collapse' href='#collapse$counter'>
                <h3 class='panel-title'>"
-        . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . "</h3>
+        . $course['classNumber'] . ": " . $course['courseSemester'] . " " . $course['courseYear'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h3>
                 <h5>Opens: " . date_format($opens, 'F j, Y, g:i a') . " | Closes: " . date_format($closes, 'F j, Y, g:i a') . "</h5>
                 
             </div>
@@ -144,7 +131,7 @@ foreach ($courses as $course)
             echo "
                     <div class='panel panel-default'>
                     <div class='panel-heading' data-toggle='collapse' href='#innercollapse$innerCounter'>
-                        <h4 class='panel-title'>Student: " . $application['firstname'] . " " . $application['lastname'] . "</h4>
+                        <h4 class='panel-title'>Student: " . $application['firstname'] . " " . $application['lastname'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h4>
                     </div>
                     
                     <div id='innercollapse$innerCounter' class='panel-collapse collapse'>

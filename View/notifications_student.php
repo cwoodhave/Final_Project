@@ -40,25 +40,25 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         //Verify fields are not empty and that they exist
         if (empty($_POST['applicationID']) || !isset($_POST['applicationID']) || !is_numeric($_POST['applicationID'])){
             $ok = false;
-            $error[] = "Something went wrong.  Message was not sent.";
+            $error[] = "Something went wrong. 1 Message was not sent.";
         } else {
             $applicationID = filter_var($_POST['applicationID'], FILTER_SANITIZE_NUMBER_INT);
         }
         if (empty($_POST['sentFrom']) || !isset($_POST['sentFrom']) || !is_numeric($_POST['sentFrom']) || $_POST['sentFrom'] !== $user->getUserID()){
             $ok = false;
-            $error[] = "Something went wrong. Message was not sent.";
+            $error[] = "Something went wrong. 2 Message was not sent.";
         } else {
             $sentFrom = filter_var($_POST['sentFrom'], FILTER_SANITIZE_NUMBER_INT);
         }
         if (empty($_POST['sentTo']) || !isset($_POST['sentTo']) || !is_numeric($_POST['sentTo'])){
             $ok = false;
-            $error[] = "Something went wrong. Message was not sent.";
+            $error[] = "Something went wrong. 3 Message was not sent.";
         } else {
             $sentTo = filter_var($_POST['sentTo'], FILTER_SANITIZE_NUMBER_INT);
         }
         if (empty($_POST['notificationText']) || !isset($_POST['notificationText'])){
             $ok = false;
-            $error[] = "Something went wrong.  Message was not sent.  Must provide a message";
+            $error[] = "Something went wrong. Message was not sent. Must provide a message";
         } else {
             $notificationText = filter_var($_POST['notificationText'], FILTER_SANITIZE_STRING);
         }
@@ -68,7 +68,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $application = Applications::GetFullApplicationByID($applicationID);
             if($application['instructorID'] !== $sentTo)
             {
-                $error[] = "Something went wrong. Message was not sent.";
+                $error[] = "Something went wrong. 4 Message was not sent.";
             }
             else
             {
@@ -78,7 +78,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $newNotification->setNotificationText($notificationText);
                 $newNotification->saveNotification();
 
-                $instructor = new Users($sentTo);
+                $instructor = new Users();
+                $instructor->getUserByID($sentTo);
 
                 $subject = "CS 4800 & 4890 Notification System";
                 $message = wordwrap("A new notification has been sent to you from one of your students for your " . $application['classNumber'] . " "
@@ -109,7 +110,7 @@ foreach ($applications as $application)
     echo "
             <div class='panel panel-default'>
             <div class='panel-heading' data-toggle='collapse' href='#innercollapse$counter'>
-                <h4 class='panel-title'>" . $application['classNumber'] . ": " . $application['courseSemester'] . " " . $application['courseYear'] . "</h4>
+                <h4 class='panel-title'>" . $application['classNumber'] . ": " . $application['courseSemester'] . " " . $application['courseYear'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h4>
             </div>
             
             <div id='innercollapse$counter' class='panel-collapse collapse'>
@@ -118,7 +119,7 @@ foreach ($applications as $application)
                 <p>Send a new notification to the instructor for this application.</p>
                 <input type='hidden' name='applicationID' value='" . $application['applicationID'] . "'>
                 <input type='hidden' name='sentFrom' value='$userID'>
-                <input type='hidden' namme='sentTo' value='" . $application['instructorID'] . "'>
+                <input type='hidden' name='sentTo' value='" . $application['instructorID'] . "'>
                 <div class='row'><textarea cols='80' rows='5' name='notificationText', id='notificationText'></textarea></div>
                 <div class='row'><input type='submit' class='btn btn-warning' name='submit' value='Send Notification'></div>
             </form>";
@@ -144,6 +145,5 @@ foreach ($applications as $application)
 }
 
 echo "</div>";
-
 
 require_once '_footer.php';
