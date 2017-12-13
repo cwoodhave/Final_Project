@@ -25,7 +25,7 @@ class Responses
         $this->dbh = DatabaseConnection::getInstance();
         $this->responseID = null;
 
-        if($responseID !== null)
+        if($responseID !== null && is_int($responseID))
         {
             $this->getResponseByID($responseID);
         }
@@ -93,14 +93,17 @@ class Responses
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
+            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            {
+                $db = DatabaseConnection::getInstance();
 
-            $stmt = $db->prepare("SELECT * FROM responses WHERE applicationID = :applicationID");
-            $stmt->bindParam("applicationID", $applicationID);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $stmt = $db->prepare("SELECT * FROM responses WHERE applicationID = :applicationID");
+                $stmt->bindParam("applicationID", $applicationID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            return $stmt->fetchAll();
+                return $stmt->fetchAll();
+            }
         }
         catch (\PDOException $e)
         {
@@ -121,7 +124,10 @@ class Responses
      */
     public function setResponseID($responseID)
     {
-        $this->responseID = $responseID;
+        if(isset($responseID) && !empty($responseID) && is_int($responseID))
+        {
+            $this->responseID = $responseID;
+        }
     }
 
     /**
@@ -137,7 +143,10 @@ class Responses
      */
     public function setApplicationID($applicationID)
     {
-        $this->applicationID = $applicationID;
+        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        {
+            $this->applicationID = $applicationID;
+        }
     }
 
     /**
@@ -153,7 +162,10 @@ class Responses
      */
     public function setQuestionID($questionID)
     {
-        $this->questionID = $questionID;
+        if(isset($questionID) && !empty($questionID))
+        {
+            $this->questionID = $questionID;
+        }
     }
 
     /**
@@ -169,7 +181,10 @@ class Responses
      */
     public function setResponseText($responseText)
     {
-        $this->responseText = $responseText;
+        if(isset($responseText) && !empty($responseText))
+        {
+            $this->responseText = $responseText;
+        }
     }
 
 

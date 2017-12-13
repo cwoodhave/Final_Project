@@ -55,17 +55,19 @@ class Notifications
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare('SELECT n.notificationID, n.applicationID, n.dateSent, n.sentFrom, n.notificationText, n.viewed, 
+            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare('SELECT n.notificationID, n.applicationID, n.dateSent, n.sentFrom, n.notificationText, n.viewed, 
                                                   CONCAT(u.firstname, " ", u.lastname) AS fromName
                                             FROM notifications n LEFT JOIN users u ON (n.sentFrom = u.userID)
                                             WHERE applicationID = :applicationID
                                             ORDER BY dateSent DESC;');
-            $stmt->bindParam('applicationID', $applicationID);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-            return $stmt->fetchAll();
-
+                $stmt->bindParam('applicationID', $applicationID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                return $stmt->fetchAll();
+            }
         }
         catch (\PDOException $e)
         {
@@ -75,12 +77,22 @@ class Notifications
 
     public static function SetNotificationAsViewed($notificationID)
     {
-        $db = DatabaseConnection::getInstance();
-        $stmt = $db->prepare('UPDATE notifications
+        try
+        {
+            if(isset($notificationID) && !empty($notificationID) && is_int($notificationID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare('UPDATE notifications
                                         SET viewed = TRUE
                                         WHERE notificationID = :notificationID');
-        $stmt->bindParam('notificationID', $notificationID);
-        $stmt->execute();
+                $stmt->bindParam('notificationID', $notificationID);
+                $stmt->execute();
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
     }
 
     /**
@@ -96,7 +108,10 @@ class Notifications
      */
     public function setNotificationID($notificationID)
     {
-        $this->notificationID = $notificationID;
+        if(isset($notificationID) && !empty($notificationID) && is_int($notificationID))
+        {
+            $this->notificationID = $notificationID;
+        }
     }
 
     /**
@@ -112,7 +127,10 @@ class Notifications
      */
     public function setApplicationID($applicationID)
     {
-        $this->applicationID = $applicationID;
+        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        {
+            $this->applicationID = $applicationID;
+        }
     }
 
     /**
@@ -128,7 +146,10 @@ class Notifications
      */
     public function setDateSent($dateSent)
     {
-        $this->dateSent = $dateSent;
+        if(isset($dateSent) && !empty($dateSent))
+        {
+            $this->dateSent = $dateSent;
+        }
     }
 
     /**
@@ -144,7 +165,10 @@ class Notifications
      */
     public function setSentFrom($sentFrom)
     {
-        $this->sentFrom = $sentFrom;
+        if(isset($sentFrom) && !empty($sentFrom) && is_int($sentFrom))
+        {
+            $this->sentFrom = $sentFrom;
+        }
     }
 
     /**
@@ -160,7 +184,10 @@ class Notifications
      */
     public function setNotificationText($notificationText)
     {
-        $this->notificationText = $notificationText;
+        if(isset($notificationText) && !empty($notificationText))
+        {
+            $this->notificationText = $notificationText;
+        }
     }
 
     /**
@@ -176,7 +203,10 @@ class Notifications
      */
     public function setViewed($viewed)
     {
-        $this->viewed = $viewed;
+        if(isset($viewed))
+        {
+            $this->viewed = $viewed;
+        }
     }
 
 

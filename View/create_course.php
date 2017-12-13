@@ -81,7 +81,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         if($ok)
         {
             $newCourse = new Courses();
-            $newCourse->saveCourse($classNumber, $courseYear, $courseSemester, $instructorID, $openDate, $closeDate);
+            $newCourse->setClassNumber($classNumber);
+            $newCourse->setCourseYear($courseYear);
+            $newCourse->setCourseSemester($courseSemester);
+            $newCourse->setInstructorID($instructorID);
+            $newCourse->setOpenDate($openDate);
+            $newCourse->setCloseDate($closeDate);
+            $newCourse->saveCourse();
             header("location: create_course.php");
         }
     }
@@ -135,7 +141,5 @@ echo        "</select>
             <input class='btn btn-success' type='submit' name='submit' value='Create Course'/> 
         </div>
        </form><br>";
-
-//var_dump($instructors);
 
 require_once  '_footer.php';

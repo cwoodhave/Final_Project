@@ -28,7 +28,7 @@ class Applications
         $this->dbh = DatabaseConnection::getInstance();
         $this->applicationID = null;
 
-        if($applicationID !== null)
+        if($applicationID !== null && is_int($applicationID))
         {
             $this->getApplicationByID($applicationID);
         }
@@ -109,25 +109,28 @@ class Applications
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate, a.dateCreated
+            if(isset($courseID) && !empty($courseID) && is_int($courseID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate, a.dateCreated
                                             FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
                                             LEFT JOIN courses c ON (a.courseID = c.courseID) 
                                             WHERE a.courseID = :courseID
                                             ORDER BY a.dateCreated DESC");
-            $stmt->bindParam("courseID", $courseID);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $stmt->bindParam("courseID", $courseID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            $applications = $stmt->fetchAll();
+                $applications = $stmt->fetchAll();
 
-            for ($i=0; $i < sizeof($applications); ++$i)
-            {
-                $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
-                $applications[$i]['responses'] = $responses;
+                for ($i=0; $i < sizeof($applications); ++$i)
+                {
+                    $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
+                    $applications[$i]['responses'] = $responses;
+                }
+
+                return $applications;
             }
-
-            return $applications;
         }
         catch (\PDOException $e)
         {
@@ -139,25 +142,28 @@ class Applications
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
+            if(isset($userID) && !empty($userID) && is_int($userID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
                                             FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
                                             LEFT JOIN courses c ON (a.courseID = c.courseID) 
                                             WHERE a.userID = :userID
                                             ORDER BY a.dateCreated DESC");
-            $stmt->bindParam("userID", $userID);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $stmt->bindParam("userID", $userID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            $applications = $stmt->fetchAll();
+                $applications = $stmt->fetchAll();
 
-            for ($i=0; $i < sizeof($applications); ++$i)
-            {
-                $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
-                $applications[$i]['responses'] = $responses;
+                for ($i=0; $i < sizeof($applications); ++$i)
+                {
+                    $responses = Responses::getResponseByApplicationID($applications[$i]['applicationID']);
+                    $applications[$i]['responses'] = $responses;
+                }
+
+                return $applications;
             }
-
-            return $applications;
         }
         catch (\PDOException $e)
         {
@@ -167,26 +173,36 @@ class Applications
 
     public static function GetFullApplicationByID($applicationID)
     {
-        $db = DatabaseConnection::getInstance();
-        $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
+        try
+        {
+            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
                                             FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
                                             LEFT JOIN courses c ON (a.courseID = c.courseID) 
                                             WHERE a.applicationID = :applicationID
                                             ORDER BY a.dateCreated DESC");
-        $stmt->bindParam("applicationID", $applicationID);
-        $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+                $stmt->bindParam("applicationID", $applicationID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-        $rows = $stmt->rowCount();
+                $rows = $stmt->rowCount();
 
-        if ($rows === 1)
+                if ($rows === 1)
+                {
+                    $applications = $stmt->fetch();
+
+                    $responses = Responses::getResponseByApplicationID($applications['applicationID']);
+                    $applications['responses'] = $responses;
+
+                    return $applications;
+                }
+            }
+        }
+        catch (\PDOException $e)
         {
-            $applications = $stmt->fetch();
 
-            $responses = Responses::getResponseByApplicationID($applications['applicationID']);
-            $applications['responses'] = $responses;
-
-            return $applications;
         }
     }
 
@@ -194,15 +210,19 @@ class Applications
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
-            $stmt->bindParam("userID", $userID);
-            $stmt->bindParam("courseID", $courseID);
-            $stmt->execute();
+            if(isset($userID) && !empty($userID) && is_int($userID)
+            && isset($courseID) && !empty($courseID) && is_int($courseID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
+                $stmt->bindParam("userID", $userID);
+                $stmt->bindParam("courseID", $courseID);
+                $stmt->execute();
 
-            $rows = $stmt->rowCount();
+                $rows = $stmt->rowCount();
 
-            return ($rows === 1);
+                return ($rows === 1);
+            }
         }
         catch (\PDOException $e)
         {
@@ -226,7 +246,10 @@ class Applications
      */
     public function setApplicationID($applicationID)
     {
-        $this->applicationID = $applicationID;
+        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        {
+            $this->applicationID = $applicationID;
+        }
     }
 
     /**
@@ -242,7 +265,10 @@ class Applications
      */
     public function setUserID($userID)
     {
-        $this->userID = $userID;
+        if(isset($userID) && !empty($userID) && is_int($userID))
+        {
+            $this->userID = $userID;
+        }
     }
 
     /**
@@ -258,7 +284,10 @@ class Applications
      */
     public function setCourseID($courseID)
     {
-        $this->courseID = $courseID;
+        if(isset($courseID) && !empty($courseID) && is_int($courseID))
+        {
+            $this->courseID = $courseID;
+        }
     }
 
     /**
@@ -274,7 +303,10 @@ class Applications
      */
     public function setDateCreated($dateCreated)
     {
-        $this->dateCreated = $dateCreated;
+        if(isset($dateCreated) && !empty($dateCreated))
+        {
+            $this->dateCreated = $dateCreated;
+        }
     }
 
     /**
@@ -290,9 +322,10 @@ class Applications
      */
     public function setResponses($responses)
     {
-        $this->responses = $responses;
+        if(isset($responses) && !empty($responses))
+        {
+            $this->responses = $responses;
+        }
     }
-
-
 
 }

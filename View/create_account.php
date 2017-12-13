@@ -59,7 +59,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         if($ok)
         {
             $newUser = new Users();
-            $newUser->saveUser($username, $password, $first, $last, $email);
+            $newUser->setUsername($username);
+            $newUser->setPassword($password);
+            $newUser->setFirstname($first);
+            $newUser->setLastname($last);
+            $newUser->setEmail($email);
+            $newUser->saveUser();
             require_once '../Utility/login_logic.php';
         }
     }

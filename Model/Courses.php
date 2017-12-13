@@ -45,20 +45,23 @@ class Courses
     {
         try
         {
-            $stmthndl = $this->dbh->prepare("SELECT * FROM courses WHERE courseID = :courseID");
-            $stmthndl->bindParam("courseID", $courseID);
-
-            $stmthndl->execute();
-            $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
-            $row = $stmthndl->fetch();
-
-            if($stmthndl->rowCount() == 1)
+            if(isset($courseID) && !empty($courseID) && is_int($courseID))
             {
-                foreach ($row as $property => $value)
+                $stmthndl = $this->dbh->prepare("SELECT * FROM courses WHERE courseID = :courseID");
+                $stmthndl->bindParam("courseID", $courseID);
+
+                $stmthndl->execute();
+                $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
+                $row = $stmthndl->fetch();
+
+                if($stmthndl->rowCount() == 1)
                 {
-                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    foreach ($row as $property => $value)
                     {
-                        $this->$method($value);
+                        if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                        {
+                            $this->$method($value);
+                        }
                     }
                 }
             }
@@ -73,21 +76,24 @@ class Courses
     {
         try
         {
-            $stmthndl = $this->dbh->prepare("SELECT * FROM courses WHERE courseYear = :courseYear AND courseSemester = :courseSemester");
-            $stmthndl->bindParam("courseYear", $year);
-            $stmthndl->bindParam("courseSemester", $semester);
-
-            $stmthndl->execute();
-            $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
-            $row = $stmthndl->fetch();
-
-            if($stmthndl->rowCount() == 1)
+            if(isset($year) && !empty($year) && isset($semester) && !empty($semester))
             {
-                foreach ($row as $property => $value)
+                $stmthndl = $this->dbh->prepare("SELECT * FROM courses WHERE courseYear = :courseYear AND courseSemester = :courseSemester");
+                $stmthndl->bindParam("courseYear", $year);
+                $stmthndl->bindParam("courseSemester", $semester);
+
+                $stmthndl->execute();
+                $stmthndl->setFetchMode(\PDO::FETCH_ASSOC);
+                $row = $stmthndl->fetch();
+
+                if($stmthndl->rowCount() == 1)
                 {
-                    if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                    foreach ($row as $property => $value)
                     {
-                        $this->$method($value);
+                        if (method_exists($this, ($method = 'set' . ucfirst($property))))
+                        {
+                            $this->$method($value);
+                        }
                     }
                 }
             }
@@ -98,7 +104,7 @@ class Courses
         }
     }
 
-    function saveCourse($classNumber, $courseYear, $courseSemester, $instructorID, $openDate, $closeDate)
+    function saveCourse()
     {
         try
         {
@@ -106,12 +112,12 @@ class Courses
             {
                 $stmt = $this->dbh->prepare("INSERT INTO courses (classNumber, courseYear, courseSemester, instructorID, openDate, closeDate)
                                               VALUES (:classNumber, :courseYear, :courseSemester, :instructorID, :openDate, :closeDate)");
-                $stmt->bindParam('classNumber', $classNumber);
-                $stmt->bindParam('courseYear', $courseYear);
-                $stmt->bindParam('courseSemester', $courseSemester);
-                $stmt->bindParam('instructorID', $instructorID);
-                $stmt->bindParam('openDate', $openDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
-                $stmt->bindParam('closeDate', $closeDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
+                $stmt->bindParam('classNumber', $this->classNumber);
+                $stmt->bindParam('courseYear', $this->courseYear);
+                $stmt->bindParam('courseSemester', $this->courseSemester);
+                $stmt->bindParam('instructorID', $this->instructorID);
+                $stmt->bindParam('openDate', $this->openDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
+                $stmt->bindParam('closeDate', $this->closeDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
 
                 $stmt->execute();
 
@@ -123,23 +129,16 @@ class Courses
                                               SET classNumber = :classNumber, courseYear = :courseYear, courseSemester = :courseSemester, 
                                               instructorID = :instructorID, openDate = :openDate, closeDate = :closeDate
                                               WHERE courseID = :courseID");
-                $stmt->bindParam('classNumber', $classNumber);
-                $stmt->bindParam('courseYear', $courseYear);
-                $stmt->bindParam('courseSemester', $courseSemester);
-                $stmt->bindParam('instructorID', $instructorID);
-                $stmt->bindParam('openDate', $openDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
-                $stmt->bindParam('closeDate', $closeDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
+                $stmt->bindParam('classNumber', $this->classNumber);
+                $stmt->bindParam('courseYear', $this->courseYear);
+                $stmt->bindParam('courseSemester', $this->courseSemester);
+                $stmt->bindParam('instructorID', $this->instructorID);
+                $stmt->bindParam('openDate', $this->openDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
+                $stmt->bindParam('closeDate', $this->closeDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
                 $stmt->bindParam('courseID', $this->courseID);
 
                 $stmt->execute();
             }
-
-            $this->classNumber = $classNumber;
-            $this->courseYear = $courseYear;
-            $this->courseSemester = $courseSemester;
-            $this->instructorID = $instructorID;
-            $this->openDate = $openDate;
-            $this->closeDate = $closeDate;
         }
         catch (\PDOException $e)
         {
@@ -238,13 +237,16 @@ class Courses
     {
         try
         {
-            $db = DatabaseConnection::getInstance();
-            $stmt = $db->prepare("SELECT * FROM courses WHERE instructorID = :instructorID ORDER BY closeDate DESC;");
-            $stmt->bindParam("instructorID", $instructorID);
-            $stmt->execute();
-            $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+            if(isset($instructorID) && !empty($instructorID) && is_int($instructorID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT * FROM courses WHERE instructorID = :instructorID ORDER BY closeDate DESC;");
+                $stmt->bindParam("instructorID", $instructorID);
+                $stmt->execute();
+                $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
-            return $stmt->fetchAll();
+                return $stmt->fetchAll();
+            }
         }
         catch (\PDOException $e)
         {
@@ -267,7 +269,10 @@ class Courses
      */
     public function setCourseID($courseID)
     {
-        $this->courseID = $courseID;
+        if(isset($courseID) && !empty($courseID) && is_int($courseID))
+        {
+            $this->courseID = $courseID;
+        }
     }
 
     /**
@@ -283,7 +288,10 @@ class Courses
      */
     public function setClassNumber($classNumber)
     {
-        $this->classNumber = $classNumber;
+        if(isset($classNumber) && !empty($classNumber) && is_string($classNumber))
+        {
+            $this->classNumber = $classNumber;
+        }
     }
 
     /**
@@ -299,7 +307,10 @@ class Courses
      */
     public function setCourseYear($courseYear)
     {
-        $this->courseYear = $courseYear;
+        if(isset($courseYear) && !empty($courseYear) && is_int($courseYear) && $courseYear >= 2000 && $courseYear <= 2100)
+        {
+            $this->courseYear = $courseYear;
+        }
     }
 
     /**
@@ -315,7 +326,11 @@ class Courses
      */
     public function setCourseSemester($courseSemester)
     {
-        $this->courseSemester = $courseSemester;
+        if(isset($courseSemester) && !empty($courseSemester) && is_string($courseSemester) &&
+            ($courseSemester === 'FALL' || $courseSemester === 'SPRING' || $courseSemester === 'SUMMER'))
+        {
+            $this->courseSemester = $courseSemester;
+        }
     }
 
     /**
@@ -331,7 +346,10 @@ class Courses
      */
     public function setInstructorID($instructorID)
     {
-        $this->instructorID = $instructorID;
+        if(isset($instructorID) && !empty($instructorID) && is_int($instructorID))
+        {
+            $this->instructorID = $instructorID;
+        }
     }
 
     /**
@@ -347,7 +365,10 @@ class Courses
      */
     public function setOpenDate($openDate)
     {
-        $this->openDate = $openDate;
+        if(isset($openDate) && !empty($openDate) && $this->validateDate($openDate))
+        {
+            $this->openDate = $openDate;
+        }
     }
 
     /**
@@ -363,9 +384,18 @@ class Courses
      */
     public function setCloseDate($closeDate)
     {
-        $this->closeDate = $closeDate;
+        if(isset($closeDate) && !empty($closeDate) && $this->validateDate($closeDate))
+        {
+            $this->closeDate = $closeDate;
+        }
     }
 
+    //Validate DateTime as per php.net
+    private function validateDate($date, $format = 'Y-m-d\TH:i')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
 
 
 }

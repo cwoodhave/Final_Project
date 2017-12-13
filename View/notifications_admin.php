@@ -82,8 +82,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $student->getUserByID($sentTo);
 
                 $subject = "CS 4800 & 4890 Notification System";
-                $message = wordwrap("A new notification has been sent to you from your instructor for your " . $tempApplication['classNumber'] . " "
-                    . $tempApplication['courseSemester'] . " " . $tempApplication['courseYear'] . " application.");
+                $message = "A new notification has been sent to you from your instructor for your " . $tempApplication['classNumber'] . " "
+                    . $tempApplication['courseSemester'] . " " . $tempApplication['courseYear'] . " application.";
                 $email = $student->getEmail();
                 $headers = "FROM: no_reply@wsusupplementalapplication.com";
 

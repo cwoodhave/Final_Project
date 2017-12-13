@@ -29,7 +29,7 @@ class Users
         $this->dbh = DatabaseConnection::getInstance();
         $this->userID = null;
 
-        if($username != null)
+        if($username !== null)
         {
             $this->getUser($username);
         }
@@ -92,7 +92,7 @@ class Users
         }
     }
 
-    function saveUser($username, $password, $first, $last, $email)
+    function saveUser()
     {
         try {
             //Create user if none exists
@@ -100,11 +100,11 @@ class Users
             {
                 $stmthndl = $this->dbh->prepare("INSERT INTO users (username, password, firstname, lastname, email)
                                                     VALUES (:username, :password, :firstname, :lastname, :email)");
-                $stmthndl->bindParam("username", $username);
-                $stmthndl->bindParam("password", $password);
-                $stmthndl->bindParam("firstname", $first);
-                $stmthndl->bindParam("lastname", $last);
-                $stmthndl->bindParam("email", $email);
+                $stmthndl->bindParam("username", $this->username);
+                $stmthndl->bindParam("password", $this->password);
+                $stmthndl->bindParam("firstname", $this->firstname);
+                $stmthndl->bindParam("lastname", $this->lastname);
+                $stmthndl->bindParam("email", $this->email);
 
                 $stmthndl->execute();
 
@@ -118,21 +118,14 @@ class Users
                                                  SET username = :username, firstname = :firstname,
                                                 lastname = :lastname, email = :email
                                                 WHERE userID = :userID");
-                $stmthndl->bindParam("username", $username);
-                $stmthndl->bindParam("firstname", $first);
-                $stmthndl->bindParam("lastname", $last);
-                $stmthndl->bindParam("email", $email);
+                $stmthndl->bindParam("username", $this->username);
+                $stmthndl->bindParam("firstname", $this->firstname);
+                $stmthndl->bindParam("lastname", $this->lastname);
+                $stmthndl->bindParam("email", $this->email);
                 $stmthndl->bindParam("userID", $this->userID);
 
                 $stmthndl->execute();
             }
-
-            $this->username = $username;
-            $this->password = $password;
-            $this->firstname = $first;
-            $this->lastname = $last;
-            $this->email = $email;
-
         }
         catch (\PDOException $e)
         {
@@ -289,7 +282,7 @@ class Users
      */
     public function setUsername($username)
     {
-        if(isset($username) && !empty($username))
+        if(isset($username) && !empty($username) && is_string($username))
         {
             $this->username = $username;
         }
@@ -327,7 +320,7 @@ class Users
      */
     public function setFirstname($firstname)
     {
-        if(isset($firstname) && !empty($firstname))
+        if(isset($firstname) && !empty($firstname) && is_string($firstname))
         {
             $this->firstname = $firstname;
         }
@@ -346,7 +339,7 @@ class Users
      */
     public function setLastname($lastname)
     {
-        if(isset($lastname) && !empty($lastname))
+        if(isset($lastname) && !empty($lastname) && is_string($lastname))
         {
             $this->lastname = $lastname;
         }
