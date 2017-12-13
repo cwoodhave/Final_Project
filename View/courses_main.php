@@ -25,9 +25,10 @@ $oldCourses = Courses::getPreviousCourses();
 require_once '_header.php';
 
 echo "<h2>Courses Main Page</h2>
+        <div class='row'><br><a href='create_course.php'><input class='btn btn-primary' type='button' value='Create New Course'></a></div><br>
         <div class='row'>
             <h4>Active Courses</h4>
-            <table class='table table-striped'>
+            <table class='table table-bordered table-striped' id='active'>
                 <thead>
                     <tr>
                         <th class='text-center' scope='col'>Class Number</th>
@@ -58,7 +59,7 @@ echo "<h2>Courses Main Page</h2>
         </div><br>
         <div class='row'>
             <h4>Future Courses</h4>
-            <table class='table table-striped'>
+            <table class='table table-striped table-bordered' id='future'>
                 <thead>
                     <tr>
                         <th class='text-center' scope='col'>Class Number</th>
@@ -90,7 +91,7 @@ echo "<h2>Courses Main Page</h2>
         </div><br>
          <div class='row'>
             <h4>Previous Courses</h4>
-            <table class='table table-striped'>
+            <table class='table table-striped table-bordered' id='previous'>
                 <thead>
                     <tr>
                         <th class='text-center' scope='col'>Class Number</th>
@@ -119,7 +120,20 @@ echo "<h2>Courses Main Page</h2>
   echo          "</tbody>
             </table>
             
-        </div><br>
-        <a href='create_course.php'><input class='btn btn-primary' type='button' value='Create New Course'></a>";
+        </div><br>";
+
+?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#active").DataTable();
+        $('#future').DataTable();
+        $('#previous').DataTable();
+    })
+</script>
+
+<?php
 
 require_once '_footer.php';

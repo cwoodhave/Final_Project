@@ -67,7 +67,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         if($ok)
         {
-            $user->saveUser($newUsername, $verify , $newFirst, $newLast, $newEmail);
+            $user->setUsername($newUsername);
+            $user->setFirstname($newFirst);
+            $user->setLastname($newLast);
+            $user->setEmail($newEmail);
+            $user->saveUser();
             $_SESSION['login_user'] = $newUsername;
             header("location: profile.php");
         }

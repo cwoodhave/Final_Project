@@ -37,7 +37,7 @@ foreach ($applications as $application)
                 . $application['classNumber'] . ": ". $application['courseSemester'] . " " . $application['courseYear'] . " &nbsp;<span style='color: slategrey' class='glyphicon glyphicon-plus'></span></h4>
             </div>
             
-            <div id='collapse$counter' class='panel-collapse collapse' 
+            <div id='collapse$counter' class='panel-collapse collapse'> 
             <div class='panel-body' >";
 
     foreach ($application['responses'] as $response)
