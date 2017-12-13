@@ -45,7 +45,7 @@ class Courses
     {
         try
         {
-            if(isset($courseID) && !empty($courseID) && is_int($courseID))
+            if(isset($courseID) && !empty($courseID) && is_numeric($courseID))
             {
                 $stmthndl = $this->dbh->prepare("SELECT * FROM courses WHERE courseID = :courseID");
                 $stmthndl->bindParam("courseID", $courseID);
@@ -237,7 +237,7 @@ class Courses
     {
         try
         {
-            if(isset($instructorID) && !empty($instructorID) && is_int($instructorID))
+            if(isset($instructorID) && !empty($instructorID) && is_numeric($instructorID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare("SELECT * FROM courses WHERE instructorID = :instructorID ORDER BY closeDate DESC;");
@@ -269,7 +269,7 @@ class Courses
      */
     public function setCourseID($courseID)
     {
-        if(isset($courseID) && !empty($courseID) && is_int($courseID))
+        if(isset($courseID) && !empty($courseID) && is_numeric($courseID))
         {
             $this->courseID = $courseID;
         }
@@ -307,7 +307,7 @@ class Courses
      */
     public function setCourseYear($courseYear)
     {
-        if(isset($courseYear) && !empty($courseYear) && is_int($courseYear) && $courseYear >= 2000 && $courseYear <= 2100)
+        if(isset($courseYear) && !empty($courseYear) && is_numeric($courseYear) && $courseYear >= 2000 && $courseYear <= 2100)
         {
             $this->courseYear = $courseYear;
         }
@@ -346,7 +346,7 @@ class Courses
      */
     public function setInstructorID($instructorID)
     {
-        if(isset($instructorID) && !empty($instructorID) && is_int($instructorID))
+        if(isset($instructorID) && !empty($instructorID) && is_numeric($instructorID))
         {
             $this->instructorID = $instructorID;
         }

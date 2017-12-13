@@ -25,7 +25,7 @@ class Responses
         $this->dbh = DatabaseConnection::getInstance();
         $this->responseID = null;
 
-        if($responseID !== null && is_int($responseID))
+        if($responseID !== null && is_numeric($responseID))
         {
             $this->getResponseByID($responseID);
         }
@@ -93,7 +93,7 @@ class Responses
     {
         try
         {
-            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
             {
                 $db = DatabaseConnection::getInstance();
 
@@ -124,7 +124,7 @@ class Responses
      */
     public function setResponseID($responseID)
     {
-        if(isset($responseID) && !empty($responseID) && is_int($responseID))
+        if(isset($responseID) && !empty($responseID) && is_numeric($responseID))
         {
             $this->responseID = $responseID;
         }
@@ -143,7 +143,7 @@ class Responses
      */
     public function setApplicationID($applicationID)
     {
-        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
         {
             $this->applicationID = $applicationID;
         }

@@ -28,7 +28,7 @@ class Applications
         $this->dbh = DatabaseConnection::getInstance();
         $this->applicationID = null;
 
-        if($applicationID !== null && is_int($applicationID))
+        if($applicationID !== null && is_numeric($applicationID))
         {
             $this->getApplicationByID($applicationID);
         }
@@ -109,7 +109,7 @@ class Applications
     {
         try
         {
-            if(isset($courseID) && !empty($courseID) && is_int($courseID))
+            if(isset($courseID) && !empty($courseID) && is_numeric($courseID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate, a.dateCreated
@@ -142,7 +142,7 @@ class Applications
     {
         try
         {
-            if(isset($userID) && !empty($userID) && is_int($userID))
+            if(isset($userID) && !empty($userID) && is_numeric($userID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
@@ -175,7 +175,7 @@ class Applications
     {
         try
         {
-            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
@@ -210,8 +210,8 @@ class Applications
     {
         try
         {
-            if(isset($userID) && !empty($userID) && is_int($userID)
-            && isset($courseID) && !empty($courseID) && is_int($courseID))
+            if(isset($userID) && !empty($userID) && is_numeric($userID)
+            && isset($courseID) && !empty($courseID) && is_numeric($courseID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
@@ -246,7 +246,7 @@ class Applications
      */
     public function setApplicationID($applicationID)
     {
-        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
         {
             $this->applicationID = $applicationID;
         }
@@ -265,7 +265,7 @@ class Applications
      */
     public function setUserID($userID)
     {
-        if(isset($userID) && !empty($userID) && is_int($userID))
+        if(isset($userID) && !empty($userID) && is_numeric($userID))
         {
             $this->userID = $userID;
         }
@@ -284,7 +284,7 @@ class Applications
      */
     public function setCourseID($courseID)
     {
-        if(isset($courseID) && !empty($courseID) && is_int($courseID))
+        if(isset($courseID) && !empty($courseID) && is_numeric($courseID))
         {
             $this->courseID = $courseID;
         }

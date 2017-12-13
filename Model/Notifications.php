@@ -55,7 +55,7 @@ class Notifications
     {
         try
         {
-            if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+            if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare('SELECT n.notificationID, n.applicationID, n.dateSent, n.sentFrom, n.notificationText, n.viewed, 
@@ -79,7 +79,7 @@ class Notifications
     {
         try
         {
-            if(isset($notificationID) && !empty($notificationID) && is_int($notificationID))
+            if(isset($notificationID) && !empty($notificationID) && is_numeric($notificationID))
             {
                 $db = DatabaseConnection::getInstance();
                 $stmt = $db->prepare('UPDATE notifications
@@ -108,7 +108,7 @@ class Notifications
      */
     public function setNotificationID($notificationID)
     {
-        if(isset($notificationID) && !empty($notificationID) && is_int($notificationID))
+        if(isset($notificationID) && !empty($notificationID) && is_numeric($notificationID))
         {
             $this->notificationID = $notificationID;
         }
@@ -127,7 +127,7 @@ class Notifications
      */
     public function setApplicationID($applicationID)
     {
-        if(isset($applicationID) && !empty($applicationID) && is_int($applicationID))
+        if(isset($applicationID) && !empty($applicationID) && is_numeric($applicationID))
         {
             $this->applicationID = $applicationID;
         }
@@ -165,7 +165,7 @@ class Notifications
      */
     public function setSentFrom($sentFrom)
     {
-        if(isset($sentFrom) && !empty($sentFrom) && is_int($sentFrom))
+        if(isset($sentFrom) && !empty($sentFrom) && is_numeric($sentFrom))
         {
             $this->sentFrom = $sentFrom;
         }
