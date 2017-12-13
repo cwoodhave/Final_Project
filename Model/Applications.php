@@ -30,7 +30,7 @@ class Applications
 
         if($applicationID !== null)
         {
-            $this->getApplicationByID(@$applicationID);
+            $this->getApplicationByID($applicationID);
         }
 
     }
@@ -165,17 +165,50 @@ class Applications
         }
     }
 
-    public static function ApplicationAlreadySubmitted($userID, $courseID) : bool
+    public static function GetFullApplicationByID($applicationID)
     {
         $db = DatabaseConnection::getInstance();
-        $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
-        $stmt->bindParam("userID", $userID);
-        $stmt->bindParam("courseID", $courseID);
+        $stmt = $db->prepare("SELECT  a.applicationID, u.userID, c.courseID, u.username, u.firstname, u.lastname, c.classNumber, c.courseYear, c.courseSemester, c.instructorID, c.openDate, c.closeDate
+                                            FROM applications a LEFT JOIN users u ON (a.userID = u.userID)
+                                            LEFT JOIN courses c ON (a.courseID = c.courseID) 
+                                            WHERE a.applicationID = :applicationID
+                                            ORDER BY a.dateCreated DESC");
+        $stmt->bindParam("applicationID", $applicationID);
         $stmt->execute();
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
         $rows = $stmt->rowCount();
 
-        return ($rows === 1);
+        if ($rows === 1)
+        {
+            $applications = $stmt->fetch();
+
+            $responses = Responses::getResponseByApplicationID($applications['applicationID']);
+            $applications['responses'] = $responses;
+
+            return $applications;
+        }
+    }
+
+    public static function ApplicationAlreadySubmitted($userID, $courseID) : bool
+    {
+        try
+        {
+            $db = DatabaseConnection::getInstance();
+            $stmt = $db->prepare("SELECT * FROM applications WHERE userID = :userID AND courseID = :courseID");
+            $stmt->bindParam("userID", $userID);
+            $stmt->bindParam("courseID", $courseID);
+            $stmt->execute();
+
+            $rows = $stmt->rowCount();
+
+            return ($rows === 1);
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+
 
     }
 

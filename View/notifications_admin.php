@@ -10,7 +10,7 @@ if(session_status() == PHP_SESSION_NONE){
     session_start();
 }
 
-if(!isset($_SESSION['login_user']) || $_SESSION['login_user'] === '' || !isset($_SESSION['login_user_isAdmin']) || !$_SESSION['login_user_isAdmin']){
+if(!isset($_SESSION['login_user']) || empty($_SESSION['login_user']) || !isset($_SESSION['login_user_isAdmin']) || !$_SESSION['login_user_isAdmin']){
     header("Location: ../index.php");
 }
 
@@ -30,14 +30,11 @@ $courses = Courses::getCoursesByInstructor($user->getUserID());
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
-    if(!empty($_POST['action']) && $_POST['action'] == 'post_notification'){
-        echo "<p>Message for application id " . $_POST['appID'] . "</p>";
-        die();
-    }
-
     if (isset($_POST['submit'])) {
+
         $applicationID = 0;
         $sentFrom = 0;
+        $sentTo = 0;
         $notificationText = "";
         $ok = true;
         //Verify fields are not empty and that they exist
@@ -53,6 +50,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         } else {
             $sentFrom = filter_var($_POST['sentFrom'], FILTER_SANITIZE_NUMBER_INT);
         }
+        if (empty($_POST['sentTo']) || !isset($_POST['sentTo']) || !is_numeric($_POST['sentTo'])){
+            $ok = false;
+            $error[] = "Something went wrong. Message was not sent.";
+        } else {
+            $sentTo = filter_var($_POST['sentTo'], FILTER_SANITIZE_NUMBER_INT);
+        }
         if (empty($_POST['notificationText']) || !isset($_POST['notificationText'])){
             $ok = false;
             $error[] = "Something went wrong.  Message was not sent.  Must provide a message";
@@ -62,12 +65,43 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         if($ok)
         {
-            $newNotification = new Notifications();
-            $newNotification->setApplicationID($applicationID);
-            $newNotification->setSentFrom($sentFrom);
-            $newNotification->setNotificationText($notificationText);
-            $newNotification->saveNotification();
-            header("Refresh:0");
+
+            $tempApplication = Applications::GetFullApplicationByID($applicationID);
+            if($tempApplication['userID'] !== $sentTo)
+            {
+                $error[] = "Something went wrong. Message was not sent.";
+            }
+            else
+            {
+                $newNotification = new Notifications();
+                $newNotification->setApplicationID($applicationID);
+                $newNotification->setSentFrom($sentFrom);
+                $newNotification->setNotificationText($notificationText);
+                $newNotification->saveNotification();
+
+                /////TEST HERE USER IS NOT BEING INITIALIZED!!!!!
+                $student = new Users($sentTo);
+                $error[] = var_dump($student);
+
+                $subject = "CS 4800 & 4890 Notification System";
+                $message = wordwrap("A new notification has been sent to you from your instructor for your " . $tempApplication['classNumber'] . " "
+                    . $tempApplication['courseSemester'] . " " . $tempApplication['courseYear'] . " application.");
+                $email = $student->getEmail();
+                $headers = "FROM: no_reply@wsusupplementalapplication.com";
+
+                $error[] = $sentTo;
+
+
+                if(!mail($email, $subject, $message, $headers))
+                {
+                    $error[] = $email;
+                    $error[] = $subject;
+                    $error[] = $message;
+                    $error[] = $headers;
+                }
+
+                //header("Refresh:0");
+            }
         }
     }
 }
@@ -119,6 +153,7 @@ foreach ($courses as $course)
                         <p>Send a new notification to the user for this application.</p>
                         <input type='hidden' name='applicationID' value='" . $application['applicationID'] . "'>
                         <input type='hidden' name='sentFrom' value='$userID'>
+                        <input type='hidden' name='sentTo' value='" . $application['userID'] . "'>
                         <div class='row'><textarea cols='80' rows='5' name='notificationText', id='notificationText'></textarea></div>
                         <div class='row'><input type='submit' class='btn btn-warning' name='submit' value='Send Notification'></div>
                     </form>";

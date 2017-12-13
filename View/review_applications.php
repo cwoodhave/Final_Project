@@ -85,6 +85,7 @@ foreach ($courses as $course)
                         <p>Send a new notification to the user for this application.</p>
                         <input type='hidden' name='applicationID' value='" . $application['applicationID'] . "'>
                         <input type='hidden' name='sentFrom' value='$userID'>
+                        <input type='hidden' name='sentTo' value='" . $application['userID'] . "'>
                         <div class='row'><textarea cols='80' rows='5' name='notificationText', id='notificationText'></textarea></div>
                         <div class='row'><input type='submit' class='btn btn-warning' name='submit' value='Send Notification'></div>
                     </form>
