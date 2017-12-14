@@ -77,6 +77,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         } else {
             $closeDate = new DateTime($_POST['closeDate']);
         }
+        if(!empty($openDate) && !empty($closeDate)){
+            if($closeDate <= $openDate){
+                $ok = false;
+                $error[] = "Closing date must be after opening date.";
+            }
+        }
 
         if($ok)
         {
