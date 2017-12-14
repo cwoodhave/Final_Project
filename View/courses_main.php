@@ -37,6 +37,7 @@ echo "<h2>Courses Main Page</h2>
                         <th class='text-center' scope='col'>Open Date</th>
                         <th class='text-center' scope='col'>Close Date</th>
                         <th class='text-center' scope='col'>Instructor Name</th>
+                        <th class='text-center' scope='col'>Delete</th>
                     </tr>
                 </thead>
                 <tbody>";
@@ -51,6 +52,7 @@ echo "<h2>Courses Main Page</h2>
                             <td>" . date_format($open,'F j, Y, g:i a' ) . "</td>
                             <td>" . date_format($close, 'F j, Y, g:i a') . "</td>
                             <td>" . $course['instructorFirstname'] . " " . $course['instructorLastname'] . "</td>
+                            <td><span class='glyphicon glyphicon-remove-circle' style='color: red' onclick='deleteCourse(" . $course['courseID'] . ")'></span></td>
                         </tr>";
                 }
 
@@ -68,6 +70,7 @@ echo "<h2>Courses Main Page</h2>
                         <th class='text-center' scope='col'>Open Date</th>
                         <th class='text-center' scope='col'>Close Date</th>
                         <th class='text-center' scope='col'>Instructor Name</th>
+                        <th class='text-center' scope='col'>Delete</th>
                     </tr>
                 </thead>
                 <tbody>";
@@ -82,6 +85,7 @@ echo "<h2>Courses Main Page</h2>
                             <td>" . date_format($open,'F j, Y, g:i a' ) . "</td>
                             <td>" . date_format($close, 'F j, Y, g:i a') . "</td>
                             <td>" . $course['instructorFirstname'] . " " . $course['instructorLastname'] . "</td>
+                            <td><span class='glyphicon glyphicon-remove-circle' style='color: red' onclick='deleteCourse(" . $course['courseID'] . ")'></span></td>
                         </tr>";
                 }
 
@@ -100,6 +104,7 @@ echo "<h2>Courses Main Page</h2>
                         <th class='text-center' scope='col'>Open Date</th>
                         <th class='text-center' scope='col'>Close Date</th>
                         <th class='text-center' scope='col'>Instructor Name</th>
+                        <th class='text-center' scope='col'>Delete</th>
                     </tr>
                 </thead>
                 <tbody>";
@@ -114,6 +119,7 @@ echo "<h2>Courses Main Page</h2>
                             <td>" . date_format($open,'F j, Y, g:i a' ) . "</td>
                             <td>" . date_format($close, 'F j, Y, g:i a') . "</td>
                             <td>" . $course['instructorFirstname'] . " " . $course['instructorLastname'] . "</td>
+                            <td><span class='glyphicon glyphicon-remove-circle' style='color: red' onclick='deleteCourse(" . $course['courseID'] . ")'></span></td>
                         </tr>";
                 }
 
@@ -128,10 +134,37 @@ echo "<h2>Courses Main Page</h2>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
-        $("#active").DataTable();
-        $('#future').DataTable();
-        $('#previous').DataTable();
+        $("#active").DataTable({
+            "columnDefs":[{
+                "targets": [6],
+                "orderable":false
+            }]
+        });
+        $('#future').DataTable({
+            "columnDefs":[{
+                "targets": [6],
+                "orderable":false
+            }]
+        });
+        $('#previous').DataTable({
+            "columnDefs":[{
+                "targets": [6],
+                "orderable":false
+            }]
+        });
     })
+
+    function deleteCourse(id) {
+        $.post("../Utility/delete_course.php",
+            {
+                courseID: id
+            },
+            function (data, status) {
+                alert(data);
+                location.reload();
+            }
+        )
+    }
 </script>
 
 <?php

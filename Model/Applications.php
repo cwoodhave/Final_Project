@@ -228,8 +228,29 @@ class Applications
         {
 
         }
+    }
 
+    //Check if a course has any applications tied to it
+    public static function ApplicationsExistsForCourse($courseID)
+    {
+        try
+        {
+            if(isset($courseID) && !empty($courseID) && is_numeric($courseID))
+            {
+                $db = DatabaseConnection::getInstance();
+                $stmt = $db->prepare("SELECT * FROM applications WHERE courseID = :courseID");
+                $stmt->bindParam("courseID", $courseID);
+                $stmt->execute();
 
+                $rows = $stmt->rowCount();
+
+                return ($rows >= 1);
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
     }
 
 

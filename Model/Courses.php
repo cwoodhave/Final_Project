@@ -9,8 +9,10 @@
 namespace Model;
 
 use Utility\DatabaseConnection as DatabaseConnection;
+use Model\Applications as Applications;
 
 require_once (dirname(__FILE__) .  '/../Utility/DatabaseConnection.php');
+require_once (dirname(__FILE__) .  '/../Model/Applications.php');
 
 class Courses
 {
@@ -137,6 +139,24 @@ class Courses
                 $stmt->bindParam('closeDate', $this->closeDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
                 $stmt->bindParam('courseID', $this->courseID);
 
+                $stmt->execute();
+            }
+        }
+        catch (\PDOException $e)
+        {
+
+        }
+    }
+
+    function deleteCourse()
+    {
+        try
+        {
+            //Check if applications exist before deleting course
+            if(!Applications::ApplicationsExistsForCourse($this->courseID))
+            {
+                $stmt = $this->dbh->prepare('DELETE FROM courses WHERE courseID = :courseID');
+                $stmt->bindParam('courseID', $this->courseID);
                 $stmt->execute();
             }
         }
@@ -365,7 +385,7 @@ class Courses
      */
     public function setOpenDate($openDate)
     {
-        if(isset($openDate) && !empty($openDate) && $this->validateDate($openDate))
+        if(isset($openDate) && !empty($openDate))
         {
             $this->openDate = $openDate;
         }
@@ -384,18 +404,10 @@ class Courses
      */
     public function setCloseDate($closeDate)
     {
-        if(isset($closeDate) && !empty($closeDate) && $this->validateDate($closeDate))
+        if(isset($closeDate) && !empty($closeDate))
         {
             $this->closeDate = $closeDate;
         }
     }
-
-    //Validate DateTime as per php.net
-    private function validateDate($date, $format = 'Y-m-d\TH:i')
-    {
-        $d = \DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) == $date;
-    }
-
 
 }

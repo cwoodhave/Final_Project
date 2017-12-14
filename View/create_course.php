@@ -65,13 +65,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         } else {
             $instructorID = filter_var($_POST['instructorID'], FILTER_SANITIZE_NUMBER_INT);
         }
-        if (empty($_POST['openDate']) || !isset($_POST['openDate']) || !validateDate($_POST['openDate'])){
+        if (empty($_POST['openDate']) || !isset($_POST['openDate']) || !is_string($_POST['openDate']) || !validateDate($_POST['openDate'])){
             $ok = false;
             $error[] = "Invalid Open Date";
         } else {
             $openDate =new DateTime($_POST['openDate']);
         }
-        if (empty($_POST['closeDate']) || !isset($_POST['closeDate']) || !validateDate($_POST['closeDate'])){
+        if (empty($_POST['closeDate']) || !isset($_POST['closeDate']) || !is_string($_POST['closeDate'])|| !validateDate($_POST['closeDate'])){
             $ok = false;
             $error[] = "Invalid Close Date";
         } else {
